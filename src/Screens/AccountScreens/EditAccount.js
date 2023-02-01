@@ -10,6 +10,7 @@ import {
     TouchableOpacity,
     Modal,
     Button,
+    ScrollView,
 } from 'react-native'
 
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -74,148 +75,182 @@ const EditAccount = () => {
                     {/** header */}
 
                     <HStack
-                        h={Platform.OS === 'ios' ? '10%' : '15%'}
+                        h={Platform.OS === 'ios' ? '10%' : 48}
                         style={styles.titleContainer}>
                         <Text style={styles.textTitle}> Edit Details</Text>
                     </HStack>
 
-                    {/** Inputs */}
-                    <Stack
-                        w='100%'
-                        h='80%'
-                        alignItems='center'
-                        style={{ backgroundColor: '#fcfcfd' }}>
-                        <Stack
-                            w='80%'
-                            h='100%'
-                            style={{ justifyContent: 'space-between' }}>
-                            <Stack spacing={8}>
-                                <Text style={styles.inputLabel}>
-                                    What is your Patient ID?
-                                </Text>
-                                <TextInput
-                                    style={styles.inputTexts}
-                                    placeholder='Enter your ID number here...'
-                                />
-                            </Stack>
-                            <Stack spacing={8}>
-                                <Text style={styles.inputLabel}>
-                                    What is your Full name?
-                                </Text>
-                                <TextInput
-                                    style={styles.inputTexts}
-                                    placeholder='Enter your name here'
-                                />
-                            </Stack>
-                            <Stack spacing={8}>
-                                <Text style={styles.inputLabel}>Birthday</Text>
+                    <Stack style={{ height: '100%' }}>
+                        <ScrollView contentContainerStyle={{ flex: 1 }}>
+                            {/** Inputs */}
+                            <Stack
+                                w='100%'
+                                h='100%'
+                                alignItems='center'
+                                style={{
+                                    backgroundColor: '#fcfcfd',
+                                    paddingBottom: 100,
+                                }}>
+                                <Stack w='80%' h='100%' spacing={'10%'}>
+                                    <Stack spacing={8}>
+                                        <Text style={styles.inputLabel}>
+                                            What is your Patient ID?
+                                        </Text>
+                                        <TextInput
+                                            style={styles.inputTexts}
+                                            placeholder='Enter your ID number here...'
+                                        />
+                                    </Stack>
+                                    <Stack spacing={8}>
+                                        <Text style={styles.inputLabel}>
+                                            What is your Full name?
+                                        </Text>
+                                        <TextInput
+                                            style={styles.inputTexts}
+                                            placeholder='Enter your name here'
+                                        />
+                                    </Stack>
+                                    <Stack spacing={8}>
+                                        <Text style={styles.inputLabel}>
+                                            Birthday
+                                        </Text>
 
-                                <TouchableWithoutFeedback
-                                    onPress={() => showMode('date')}>
-                                    <View style={styles.inputPickerContainer}>
-                                        {showDates === '' ? (
-                                            <Text
-                                                style={styles.inputPickerText}
-                                                placeholder='Please select date'
-                                                inputMode='date'>
-                                                Please select date
-                                            </Text>
-                                        ) : (
-                                            <Text
-                                                style={styles.inputPickerText}
-                                                placeholder='Please select date'
-                                                inputMode='date'>
-                                                {showDates}
-                                            </Text>
-                                        )}
-                                    </View>
-                                </TouchableWithoutFeedback>
-
-                                <Modal
-                                    style={{
-                                        backgroundColor: 'rgba(0,0,0,0.1)',
-                                        marginTop: 0,
-                                    }}
-                                    animationType='slide'
-                                    transparent={true}
-                                    visible={activateDate}>
-                                    <View
-                                        style={{
-                                            backgroundColor: 'rgba(0,0,0,0.5)',
-
-                                            justifyContent: 'center',
-                                            alignItems: 'center',
-                                            flex: 1,
-                                        }}>
-                                        <Stack spacing={30}>
-                                            <View style={styles.dateContainer}>
-                                                <DateTimePicker
-                                                    textColor='#000'
-                                                    testID='dateTimePicker'
-                                                    value={date}
-                                                    mode={mode}
-                                                    display={
-                                                        Platform.OS === 'ios'
-                                                            ? 'spinner'
-                                                            : 'default'
-                                                    }
-                                                    onChange={onChange}
-                                                    positiveButtonLabel='OK'
-                                                />
+                                        <TouchableWithoutFeedback
+                                            onPress={() => showMode('date')}>
+                                            <View
+                                                style={
+                                                    styles.inputPickerContainer
+                                                }>
+                                                {showDates === '' ? (
+                                                    <Text
+                                                        style={
+                                                            styles.inputPickerText
+                                                        }
+                                                        placeholder='Please select date'
+                                                        inputMode='date'>
+                                                        Please select date
+                                                    </Text>
+                                                ) : (
+                                                    <Text
+                                                        style={
+                                                            styles.inputPickerText
+                                                        }
+                                                        placeholder='Please select date'
+                                                        inputMode='date'>
+                                                        {showDates}
+                                                    </Text>
+                                                )}
                                             </View>
+                                        </TouchableWithoutFeedback>
 
-                                            {Platform.OS === 'ios' && (
-                                                <TouchableOpacity
-                                                    onPress={iosAcceptBtn}
-                                                    style={styles.dateBtn}>
-                                                    <Text
+                                        <Modal
+                                            style={{
+                                                backgroundColor:
+                                                    'rgba(0,0,0,0.1)',
+                                                marginTop: 0,
+                                            }}
+                                            animationType='slide'
+                                            transparent={true}
+                                            visible={activateDate}>
+                                            <View
+                                                style={{
+                                                    backgroundColor:
+                                                        'rgba(0,0,0,0.5)',
+
+                                                    justifyContent: 'center',
+                                                    alignItems: 'center',
+                                                    flex: 1,
+                                                }}>
+                                                <Stack spacing={30}>
+                                                    <View
                                                         style={
-                                                            styles.dateBtnText
+                                                            styles.dateContainer
                                                         }>
-                                                        Continue
-                                                    </Text>
-                                                </TouchableOpacity>
-                                            )}
+                                                        <DateTimePicker
+                                                            textColor='#000'
+                                                            testID='dateTimePicker'
+                                                            value={date}
+                                                            mode={mode}
+                                                            display={
+                                                                Platform.OS ===
+                                                                'ios'
+                                                                    ? 'spinner'
+                                                                    : 'default'
+                                                            }
+                                                            onChange={onChange}
+                                                            positiveButtonLabel='OK'
+                                                        />
+                                                    </View>
 
-                                            {Platform.OS === 'ios' && (
-                                                <TouchableOpacity
-                                                    onPress={iosCancelBtn}
-                                                    style={styles.dateBtn}>
-                                                    <Text
-                                                        style={
-                                                            styles.dateBtnText
-                                                        }>
-                                                        Cancel
-                                                    </Text>
-                                                </TouchableOpacity>
-                                            )}
-                                        </Stack>
-                                    </View>
-                                </Modal>
-                            </Stack>
-                            <Stack spacing={8}>
-                                <Text style={styles.inputLabel}>Weight</Text>
-                                <TextInput
-                                    style={styles.inputTexts}
-                                    placeholder='Please select your weight'
-                                />
-                            </Stack>
-                            <Stack spacing={8}>
-                                <Text style={styles.inputLabel}>Height</Text>
-                                <TextInput
-                                    style={styles.inputTexts}
-                                    placeholder='Please select your height'
-                                />
-                            </Stack>
+                                                    {Platform.OS === 'ios' && (
+                                                        <TouchableOpacity
+                                                            onPress={
+                                                                iosAcceptBtn
+                                                            }
+                                                            style={
+                                                                styles.dateBtn
+                                                            }>
+                                                            <Text
+                                                                style={
+                                                                    styles.dateBtnText
+                                                                }>
+                                                                Continue
+                                                            </Text>
+                                                        </TouchableOpacity>
+                                                    )}
 
-                            {/** button */}
+                                                    {Platform.OS === 'ios' && (
+                                                        <TouchableOpacity
+                                                            onPress={
+                                                                iosCancelBtn
+                                                            }
+                                                            style={
+                                                                styles.dateBtn
+                                                            }>
+                                                            <Text
+                                                                style={
+                                                                    styles.dateBtnText
+                                                                }>
+                                                                Cancel
+                                                            </Text>
+                                                        </TouchableOpacity>
+                                                    )}
+                                                </Stack>
+                                            </View>
+                                        </Modal>
+                                    </Stack>
+                                    <Stack spacing={8}>
+                                        <Text style={styles.inputLabel}>
+                                            Weight
+                                        </Text>
+                                        <TextInput
+                                            style={styles.inputTexts}
+                                            placeholder='Please select your weight'
+                                        />
+                                    </Stack>
+                                    <Stack spacing={8}>
+                                        <Text style={styles.inputLabel}>
+                                            Height
+                                        </Text>
+                                        <TextInput
+                                            style={styles.inputTexts}
+                                            placeholder='Please select your height'
+                                        />
+                                    </Stack>
 
-                            <Stack spacing={10}>
-                                <TouchableOpacity style={styles.nextBtn}>
-                                    <Text style={styles.nextBtnText}>Save</Text>
-                                </TouchableOpacity>
+                                    {/** button */}
+
+                                    <Stack spacing={10}>
+                                        <TouchableOpacity
+                                            style={styles.nextBtn}>
+                                            <Text style={styles.nextBtnText}>
+                                                Save
+                                            </Text>
+                                        </TouchableOpacity>
+                                    </Stack>
+                                </Stack>
                             </Stack>
-                        </Stack>
+                        </ScrollView>
                     </Stack>
                 </Stack>
             </TouchableWithoutFeedback>

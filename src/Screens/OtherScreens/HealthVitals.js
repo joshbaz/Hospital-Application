@@ -218,8 +218,9 @@ const HealthVitals = () => {
                                     style={[
                                         styles.mstatsContainer,
                                         {
-                                            backgroundColor:
-                                                'linear-gradient(0deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.95)), #3CC13B',
+                                            backgroundColor: 'rgb(245,252,245)',
+                                            borderColor:
+                                                'rgba(22, 25, 28, 0.1)',
                                         },
                                     ]}>
                                     <Stack>
@@ -246,6 +247,8 @@ const HealthVitals = () => {
                                         styles.mstatsContainer,
                                         {
                                             backgroundColor: '#FFECEA',
+                                            borderColor:
+                                                'rgba(22, 25, 28, 0.1)',
                                         },
                                     ]}>
                                     <Stack>
@@ -334,9 +337,7 @@ const HealthVitals = () => {
                     )}
 
                     {/** BI. Pressure */}
-                    {activeTab === 'pressure' && (
-                     <BPressureTab />
-                    )}
+                    {activeTab === 'pressure' && <BPressureTab />}
                 </Stack>
             </ScrollView>
         </Stack>
@@ -364,7 +365,7 @@ const styles = StyleSheet.create({
         letterSpacing: 0.37,
     },
     contentContainer: {
-        backgroundColor: '#E5E5E5',
+        backgroundColor: '#fcfcfd',
         paddingLeft: 15,
         paddingRight: 15,
         paddingTop: 15,
@@ -454,6 +455,8 @@ const styles = StyleSheet.create({
         paddingLeft: '5%',
         paddingRight: '5%',
         paddingBottom: '7%',
+        borderWidth: 1,
+
     },
     mstatsHead: {
         color: '#16191C',

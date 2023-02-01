@@ -245,7 +245,7 @@ const styles = StyleSheet.create({
     listIcon: {
         height: 32,
         width: 32,
-        borderRadius: '50%',
+        borderRadius: 20,
         margin: 'auto',
         alignItems: 'center',
         justifyContent: 'center',

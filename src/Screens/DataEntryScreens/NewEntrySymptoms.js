@@ -371,7 +371,7 @@ const styles = StyleSheet.create({
         width: 40,
         borderWidth: 1.8,
         borderColor: '#3E66FB',
-        borderRadius: '50%',
+        borderRadius: 20,
         alignItems: 'center',
         justifyContent: 'center',
     },
@@ -392,7 +392,7 @@ const styles = StyleSheet.create({
         width: 47,
         justifyContent: 'center',
         alignItems: 'center',
-        borderRadius: '50%',
+        borderRadius: 20,
     },
     cardSubHead: {
         fontFamily: 'Roboto_Regular',

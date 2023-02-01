@@ -38,7 +38,9 @@ const listActivity = [
     },
     {
         title: 'Running',
-        icon: <FontAwesome5 name='running' size={24} color='#616569' />,
+        icon: (
+            <MaterialCommunityIcons name='run-fast' size={24} color='#616569' />
+        ),
     },
     {
         title: 'Treadmill',
@@ -532,7 +534,7 @@ const styles = StyleSheet.create({
         width: 40,
         borderWidth: 1.8,
         borderColor: '#3E66FB',
-        borderRadius: '50%',
+        borderRadius: 20,
         alignItems: 'center',
         justifyContent: 'center',
     },
@@ -553,7 +555,7 @@ const styles = StyleSheet.create({
         width: 47,
         justifyContent: 'center',
         alignItems: 'center',
-        borderRadius: '50%',
+        borderRadius: 20,
     },
     cardSubHead: {
         fontFamily: 'Roboto_Regular',

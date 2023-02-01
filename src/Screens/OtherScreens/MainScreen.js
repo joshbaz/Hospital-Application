@@ -19,10 +19,11 @@ import { StatusBar } from 'expo-status-bar'
 import { MaterialIcons } from '@expo/vector-icons'
 import { Fontisto } from '@expo/vector-icons'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
+import { FontAwesome5 } from '@expo/vector-icons'
 
 const MainScreen = () => {
     return (
-        <SafeAreaView style={{ flex: 1 }}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
             <StatusBar />
             <Stack style={styles.container}>
                 {/** Date & Welcome */}
@@ -144,15 +145,15 @@ const MainScreen = () => {
                                         styles.statsIcon,
                                         { backgroundColor: '#FED8D9' },
                                     ]}>
-                                    <Fontisto
-                                        name='blood-drop'
+                                    <FontAwesome5
+                                        name='dumbbell'
                                         size={24}
-                                        color='#EE6B63'
+                                        color='#ff9a00'
                                     />
                                 </Box>
 
                                 <Text style={styles.measureText}>
-                                    Blood Glucose
+                                    Fitness Activites
                                 </Text>
 
                                 <TouchableOpacity style={styles.measureBtn}>
@@ -196,7 +197,7 @@ const styles = StyleSheet.create({
         letterSpacing: 0.37,
     },
     contentContainer: {
-        backgroundColor: '#E5E5E5',
+        backgroundColor: '#f5f5f5',
         paddingLeft: 15,
         paddingRight: 15,
         paddingTop: 15,

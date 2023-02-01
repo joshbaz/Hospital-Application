@@ -223,8 +223,8 @@ const BPressureTab = () => {
                     style={[
                         styles.mstatsContainer,
                         {
-                            backgroundColor:
-                                'linear-gradient(0deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.95)), #3CC13B',
+                            backgroundColor: 'rgb(245,252,245)',
+                            borderColor: 'rgba(22, 25, 28, 0.1)',
                         },
                     ]}>
                     <Stack>
@@ -243,6 +243,7 @@ const BPressureTab = () => {
                         styles.mstatsContainer,
                         {
                             backgroundColor: '#FFECEA',
+                            borderColor: 'rgba(22, 25, 28, 0.1)',
                         },
                     ]}>
                     <Stack>
@@ -420,6 +421,7 @@ const styles = StyleSheet.create({
         paddingLeft: '5%',
         paddingRight: '5%',
         paddingBottom: '7%',
+        borderWidth: 1,
     },
     mstatsHead: {
         color: '#16191C',
