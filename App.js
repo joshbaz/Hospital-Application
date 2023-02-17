@@ -2,6 +2,8 @@ import { StatusBar } from 'expo-status-bar'
 import { StyleSheet, Text, View, TextInput } from 'react-native'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import MainNavigator from './src/Navigation/MainNavigator'
+import { store } from './src/Store/store'
+import { Provider } from 'react-redux'
 import {
     useFonts,
     Roboto_100Thin,
@@ -52,9 +54,11 @@ export default function App() {
     }
     return (
         <SafeAreaProvider>
-            <PaperProvider>
-                <MainNavigator />
-            </PaperProvider>
+            <Provider store={store}>
+                <PaperProvider>
+                    <MainNavigator />
+                </PaperProvider>
+            </Provider>
         </SafeAreaProvider>
     )
 }

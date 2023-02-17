@@ -28,7 +28,7 @@ const Stack = createNativeStackNavigator()
 const MainNavigator = () => {
     return (
         <NavigationContainer>
-            <Stack.Navigator initialRouteName='OnboardingScreen'>
+            <Stack.Navigator initialRouteName='Login'>
                 <Stack.Screen
                     name='Login'
                     component={LoginScreen}

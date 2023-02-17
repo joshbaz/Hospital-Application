@@ -4,19 +4,26 @@ import {
     Pressable,
     KeyboardAvoidingView,
     Platform,
+    TouchableOpacity,
     TouchableWithoutFeedback,
     Keyboard,
 } from 'react-native'
 import React from 'react'
 import { Text, Stack, Box, HStack } from '@react-native-material/core'
 import { Ionicons } from '@expo/vector-icons'
-
+import { useDispatch } from 'react-redux'
+import { Login } from '../../Store/features/auth/authSlice'
 const LoginScreen = ({ navigation }) => {
+    let dispatch = useDispatch()
     const [valueText, setValueText] = React.useState('passkey')
     const [textSecure, setTextSecure] = React.useState(true)
 
     const onChangeSecure = () => {
         setTextSecure(!textSecure)
+    }
+
+    const onSendClick = () => {
+        dispatch(Login())
     }
     return (
         <KeyboardAvoidingView
@@ -77,11 +84,13 @@ const LoginScreen = ({ navigation }) => {
 
                         {/** button & signup */}
                         <Stack w='100%' items='center' spacing={20}>
-                            <Pressable style={styles.buttonStyles}>
+                            <TouchableOpacity
+                                onPress={() => onSendClick()}
+                                style={styles.buttonStyles}>
                                 <Text style={styles.buttonText}>
                                     Sign in my Account
                                 </Text>
-                            </Pressable>
+                            </TouchableOpacity>
                             <Text style={styles.accText}>
                                 Don't have an account? -{' '}
                                 <Text
