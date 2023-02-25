@@ -13,6 +13,7 @@ import {
     Dimensions,
     processColor,
     ScrollView,
+    Linking,
 } from 'react-native'
 
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -28,6 +29,16 @@ import { Zocial } from '@expo/vector-icons'
 import { List, Switch, Divider } from 'react-native-paper'
 
 const ContactDetails = () => {
+    const makePhoneCall = (phoneNumber) => {
+        let pnumber = phoneNumber
+        if (Platform.OS !== 'android') {
+            pnumber = `telprompt:${phoneNumber}`
+        } else {
+            pnumber = `tel:${phoneNumber}`
+        }
+
+        Linking.openURL(pnumber)
+    }
     return (
         <Stack style={styles.container}>
             <StatusBar />
@@ -162,7 +173,9 @@ const ContactDetails = () => {
                         {/** Logout Button */}
 
                         <Stack alignItems='center'>
-                            <TouchableOpacity style={styles.logoutBtn}>
+                            <TouchableOpacity
+                                onPress={() => makePhoneCall('+254790309898')}
+                                style={styles.logoutBtn}>
                                 <Text style={styles.logoutBtnText}>
                                     Make Call
                                 </Text>

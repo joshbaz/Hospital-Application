@@ -23,12 +23,13 @@ import NewEntryBGlucose from '../Screens/DataEntryScreens/NewEntryBGlucose'
 import NewEntryBPressure from '../Screens/DataEntryScreens/NewEntryBPressure'
 import NewEntryFitness from '../Screens/DataEntryScreens/NewEntryFitness'
 import NewEntrySymptoms from '../Screens/DataEntryScreens/NewEntrySymptoms'
+import LogTimeMain from '../Screens/DataEntryScreens/LogTimeMain'
 
 const Stack = createNativeStackNavigator()
 const MainNavigator = () => {
     return (
         <NavigationContainer>
-            <Stack.Navigator initialRouteName='Login'>
+            <Stack.Navigator initialRouteName='Home'>
                 <Stack.Screen
                     name='Login'
                     component={LoginScreen}
@@ -166,6 +167,24 @@ const MainNavigator = () => {
                 />
 
                 <Stack.Screen
+                    name='MainLogTime'
+                    component={LogTimeMain}
+                    options={{
+                        headerTitle: '',
+                        headerRight: () => <HeaderRight />,
+                        headerLeft: () => <HeaderArrow />,
+                        headerTitleAlign: 'center',
+                        headerStyle: {
+                            backgroundColor: '#fff',
+                            elevation: 0,
+                            shadowOpacity: 0,
+                        },
+
+                        headerShadowVisible: false,
+                    }}
+                />
+
+                <Stack.Screen
                     name='VitalSigns'
                     component={VitalSigns}
                     options={{
@@ -189,7 +208,7 @@ const MainNavigator = () => {
                     options={{
                         headerTitle: 'New Entry',
 
-                        headerLeft: () => <HeaderArrow />,
+                        headerLeft: (props) => <HeaderArrow {...props} />,
                         headerTitleAlign: 'center',
                         headerStyle: {
                             backgroundColor: '#fff',

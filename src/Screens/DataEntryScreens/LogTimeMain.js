@@ -50,18 +50,7 @@ const linkData = [
     },
 ]
 
-const LogTime = ({ route, navigation }) => {
-    const [pathScreen, setPathScreen] = React.useState('')
-    const { vital } = route.params
-    console.log('routes', vital)
-
-    React.useEffect(() => {
-        if (vital === 'Blood Glucose') {
-            setPathScreen(() => 'EntryBGlucose')
-        } else {
-            setPathScreen(() => 'EntryFitness')
-        }
-    }, [vital])
+const LogTimeMain = ({ route, navigation }) => {
     return (
         <Stack style={styles.container}>
             <StatusBar />
@@ -70,7 +59,7 @@ const LogTime = ({ route, navigation }) => {
             <HStack
                 h={Platform.OS === 'ios' ? '10%' : '15%'}
                 style={styles.titleContainer}>
-                <Text style={styles.textTitle}>Log Time ({vital})</Text>
+                <Text style={styles.textTitle}>Log Time</Text>
             </HStack>
 
             {/** rest of the content */}
@@ -99,8 +88,7 @@ const LogTime = ({ route, navigation }) => {
 
                             <TouchableOpacity
                                 onPress={() =>
-                                    navigation.navigate(pathScreen, {
-                                        vital,
+                                    navigation.navigate('VitalSigns', {
                                         vitalTimelineType: data.keylink,
                                     })
                                 }>
@@ -120,7 +108,7 @@ const LogTime = ({ route, navigation }) => {
     )
 }
 
-export default LogTime
+export default LogTimeMain
 
 const styles = StyleSheet.create({
     container: {

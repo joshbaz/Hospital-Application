@@ -29,7 +29,8 @@ import { FontAwesome5 } from '@expo/vector-icons'
 
 import { List, Switch, Divider } from 'react-native-paper'
 
-const VitalSigns = () => {
+const VitalSigns = ({ route, navigation }) => {
+    const { vitalTimelineType } = route.params
     return (
         <Stack style={styles.container}>
             <StatusBar />
@@ -39,6 +40,7 @@ const VitalSigns = () => {
                 h={Platform.OS === 'ios' ? '10%' : '15%'}
                 style={styles.titleContainer}>
                 <Text style={styles.textTitle}>Vital Signs</Text>
+                <Text>({vitalTimelineType})</Text>
             </HStack>
 
             {/** rest of the content */}
@@ -71,7 +73,14 @@ const VitalSigns = () => {
 
                         <Text style={styles.measureText}>Blood Glucose</Text>
 
-                        <TouchableOpacity style={styles.measureBtn}>
+                        <TouchableOpacity
+                            onPress={() =>
+                                navigation.navigate('EntryBGlucose', {
+                                    vital: 'Blood Glucose',
+                                    vitalTimelineType,
+                                })
+                            }
+                            style={styles.measureBtn}>
                             <Text style={styles.measureBtnText}>Measure</Text>
                         </TouchableOpacity>
                     </HStack>
@@ -90,7 +99,14 @@ const VitalSigns = () => {
 
                         <Text style={styles.measureText}>Blood Pressure</Text>
 
-                        <TouchableOpacity style={styles.measureBtn}>
+                        <TouchableOpacity
+                            onPress={() =>
+                                navigation.navigate('EntryBPressure', {
+                                    vital: 'Blood Pressure',
+                                    vitalTimelineType,
+                                })
+                            }
+                            style={styles.measureBtn}>
                             <Text style={styles.measureBtnText}>Measure</Text>
                         </TouchableOpacity>
                     </HStack>
@@ -108,10 +124,17 @@ const VitalSigns = () => {
                         </Box>
 
                         <Text style={styles.measureText}>
-                            Ftness Activities
+                            Fitness Activities
                         </Text>
 
-                        <TouchableOpacity style={styles.measureBtn}>
+                        <TouchableOpacity
+                            onPress={() =>
+                                navigation.navigate('EntryFitness', {
+                                    vital: 'Fitness Activities',
+                                    vitalTimelineType,
+                                })
+                            }
+                            style={styles.measureBtn}>
                             <Text style={styles.measureBtnText}>Measure</Text>
                         </TouchableOpacity>
                     </HStack>

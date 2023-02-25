@@ -13,6 +13,7 @@ import {
     Dimensions,
     processColor,
     ScrollView,
+    ActivityIndicator,
 } from 'react-native'
 
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -30,6 +31,14 @@ import { Ionicons } from '@expo/vector-icons'
 
 import { List, Switch, Divider } from 'react-native-paper'
 import DateTimePicker from '@react-native-community/datetimepicker'
+
+import { useDispatch, useSelector } from 'react-redux'
+import Toast from 'react-native-root-toast'
+import {
+    createVitalFitness,
+    reset,
+} from '../../Store/features/vitals/vitalSlice'
+import moment from 'moment-timezone'
 
 const listActivity = [
     {
@@ -62,7 +71,8 @@ const listActivity = [
     },
 ]
 
-const NewEntryFitness = () => {
+const NewEntryFitness = ({ route, navigation }) => {
+    let dispatch = useDispatch()
     const [date, setDate] = React.useState(new Date())
     const [mode, setMode] = React.useState('date')
     const [activateDate, setActivateDate] = React.useState(false)
@@ -72,6 +82,15 @@ const NewEntryFitness = () => {
     const [activateActivity, setActivateActivity] = React.useState(false)
     const [selectActivity, setSelectActivity] = React.useState('')
     const [chosenActivity, setChosenActivity] = React.useState('')
+
+    const [durationValue, setDurationValue] = React.useState(null)
+    const [activateEditValue, setActivateEditValue] = React.useState(false)
+
+    const [isSubmittingp, setIsSubmittingp] = React.useState(false)
+
+    const { isError, isSuccess, message } = useSelector((state) => state.vitals)
+
+    const { vital, vitalTimelineType } = route.params
 
     const onChange = (event, selectedDate) => {
         const currentDate = selectedDate || date
@@ -88,7 +107,7 @@ const NewEntryFitness = () => {
 
         let fTime =
             `${tempDate.getHours()}` +
-            '.' +
+            ':' +
             `${tempDate.getMinutes()}` +
             ' ' +
             `${tempDate.getHours() >= 12 ? 'PM' : 'AM'}`
@@ -125,7 +144,7 @@ const NewEntryFitness = () => {
             tempDate.getFullYear()
         let fTime =
             `${tempDate.getHours()}` +
-            '.' +
+            ':' +
             `${tempDate.getMinutes()}` +
             ' ' +
             `${tempDate.getHours() >= 12 ? 'PM' : 'AM'}`
@@ -157,6 +176,75 @@ const NewEntryFitness = () => {
         setSelectActivity(() => chosenActivity)
         setActivateActivity(() => false)
     }
+
+    React.useEffect(() => {
+        if (isError) {
+            let toast = Toast.show(message, {
+                duration: Toast.durations.LONG,
+                position: 80,
+                backgroundColor: 'red',
+            })
+
+            setTimeout(function hideToast() {
+                Toast.hide(toast)
+            }, 8000)
+
+            setIsSubmittingp(false)
+            dispatch(reset())
+        }
+
+        if (isSuccess && message) {
+            let toast = Toast.show(message, {
+                duration: Toast.durations.LONG,
+                position: 80,
+                backgroundColor: 'green',
+            })
+
+            setTimeout(function hideToast() {
+                Toast.hide(toast)
+            }, 8000)
+
+            setIsSubmittingp(false)
+
+            navigation.navigate('Home')
+
+            dispatch(reset())
+        }
+    }, [isError, isSuccess, message, dispatch])
+
+    const handleSubmit = () => {
+        if (
+            durationValue === null ||
+            durationValue === '' ||
+            showTime === '' ||
+            vital === '' ||
+            vitalTimelineType === '' ||
+            showDates === '' ||
+            chosenActivity === ''
+        ) {
+            let toast = Toast.show('Missing  fields', {
+                duration: Toast.durations.LONG,
+                position: 80,
+                backgroundColor: 'red',
+            })
+
+            setTimeout(function hideToast() {
+                Toast.hide(toast)
+            }, 8000)
+        } else {
+             let momentDate = moment(date)
+            let alldetails = {
+                vitalTimelineType,
+                durationValue,
+                chosenActivity,
+                currentTime: showTime,
+                currentDate: momentDate,
+            }
+
+            dispatch(createVitalFitness(alldetails))
+            setIsSubmittingp(() => true)
+        }
+    }
     return (
         <Stack style={styles.container}>
             <StatusBar />
@@ -166,6 +254,7 @@ const NewEntryFitness = () => {
                 h={Platform.OS === 'ios' ? 48 : 48}
                 style={styles.titleContainer}>
                 <Text style={styles.textTitle}>Fitness Activities</Text>
+                <Text>({vitalTimelineType})</Text>
             </HStack>
 
             {/** rest of the content */}
@@ -230,16 +319,43 @@ const NewEntryFitness = () => {
                                     justifyContent='center'
                                     alignItems='center'
                                     spacing={12}>
-                                    <Text style={styles.cardValue}>0</Text>
+                                    {activateEditValue ? (
+                                        <TextInput
+                                            inputMode='decimal'
+                                            keyboardType='decimal-pad'
+                                            style={styles.cardValue}
+                                            placeholder='0'
+                                            value={durationValue}
+                                            onChangeText={(value) => {
+                                                setDurationValue(value)
+                                            }}
+                                        />
+                                    ) : (
+                                        <Text style={styles.cardValue}>
+                                            {durationValue}
+                                        </Text>
+                                    )}
                                     <Text style={styles.cardValueType}>
                                         /min
                                     </Text>
                                 </HStack>
                             </Stack>
 
-                            <TouchableOpacity style={styles.cardBtn}>
-                                <Text style={styles.cardBtnText}>Edit</Text>
-                            </TouchableOpacity>
+                            {activateEditValue ? (
+                                <TouchableOpacity
+                                    style={styles.cardBtn}
+                                    onPress={() => setActivateEditValue(false)}>
+                                    <Text style={styles.cardBtnText}>
+                                        Close
+                                    </Text>
+                                </TouchableOpacity>
+                            ) : (
+                                <TouchableOpacity
+                                    style={styles.cardBtn}
+                                    onPress={() => setActivateEditValue(true)}>
+                                    <Text style={styles.cardBtnText}>Edit</Text>
+                                </TouchableOpacity>
+                            )}
                         </HStack>
 
                         {/** date */}
@@ -306,9 +422,17 @@ const NewEntryFitness = () => {
                         </TouchableOpacity>
                     </Stack>
 
-                    <TouchableOpacity style={styles.nextBtn}>
-                        <Text style={styles.nextBtnText}>Continue</Text>
-                    </TouchableOpacity>
+                    {isSubmittingp ? (
+                        <View style={styles.nextBtn}>
+                            <ActivityIndicator size='small' color='white' />
+                        </View>
+                    ) : (
+                        <TouchableOpacity
+                            onPress={handleSubmit}
+                            style={styles.nextBtn}>
+                            <Text style={styles.nextBtnText}>Continue</Text>
+                        </TouchableOpacity>
+                    )}
                 </Stack>
             </ScrollView>
 
@@ -526,7 +650,7 @@ const styles = StyleSheet.create({
         fontFamily: 'Roboto_Bold',
         color: '#16191C',
         fontSize: 25,
-        lineHeight: 41,
+
         letterSpacing: 0.37,
     },
     arrowRight: {

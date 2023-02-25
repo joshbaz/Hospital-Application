@@ -14,9 +14,11 @@ import {
 import React from 'react'
 import { Text, Stack, Box, HStack } from '@react-native-material/core'
 import { MaterialIcons } from '@expo/vector-icons'
+import { useNavigation } from '@react-navigation/native'
 const HeaderArrow = (props) => {
+    const navigation = useNavigation()
     return (
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
             <HStack justifyContent='center' items='center'>
                 <MaterialIcons
                     name='keyboard-arrow-left'

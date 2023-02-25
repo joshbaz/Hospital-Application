@@ -10,6 +10,7 @@ import {
     TouchableOpacity,
     Modal,
     Button,
+    ActivityIndicator,
 } from 'react-native'
 
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -17,13 +18,40 @@ import React from 'react'
 import { Text, Stack, Box, HStack } from '@react-native-material/core'
 import { StatusBar } from 'expo-status-bar'
 import DateTimePicker from '@react-native-community/datetimepicker'
+import { useDispatch, useSelector } from 'react-redux'
+import { RegisterOnboardInfo, reset } from '../../Store/features/auth/authSlice'
+import Toast from 'react-native-root-toast'
+import { Formik } from 'formik'
+import * as yup from 'yup'
+import { Picker } from '@react-native-picker/picker'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
-const OnboardingInfo = () => {
+const OnboardingInfo = ({ navigation }) => {
+    let dispatch = useDispatch()
     const [date, setDate] = React.useState(new Date())
     const [mode, setMode] = React.useState('date')
     const [activateDate, setActivateDate] = React.useState(false)
     const [showDates, setShowDates] = React.useState('')
+    const [showWeight, setShowWeight] = React.useState('')
+    const [mainWeight, setMainWeight] = React.useState('80')
+    const [decimalWeight, setDecimalWeight] = React.useState('6')
+    const [activateWeight, setActivateWeight] = React.useState(false)
 
+    /** height */
+    const [showHeight, setShowHeight] = React.useState('')
+    const [mainHeight, setMainHeight] = React.useState("5'")
+    const [decimalHeight, setDecimalHeight] = React.useState("6''")
+    const [activateHeight, setActivateHeight] = React.useState(false)
+
+    /** patient Name */
+    const [fullname, setFullName] = React.useState('')
+    const [patientsId, setPatientsId] = React.useState('')
+
+    const [isSubmittingp, setIsSubmittingp] = React.useState(false)
+
+    const { user, isError, isSuccess, message } = useSelector(
+        (state) => state.auth
+    )
     const onChange = (event, selectedDate) => {
         const currentDate = selectedDate || date
         // setShowDates(Platform.OS === 'ios')
@@ -66,6 +94,131 @@ const OnboardingInfo = () => {
     const iosCancelBtn = () => {
         setActivateDate(() => false)
     }
+
+    const onChangeMainWeight = (item) => {
+        setMainWeight(() => item)
+    }
+
+    const onChangeDecimalWeight = (item) => {
+        setDecimalWeight(() => item)
+    }
+
+    const AcceptWeightBtn = () => {
+        let weightString = `${mainWeight + '.' + decimalWeight}`
+        setShowWeight(() => weightString)
+        setActivateWeight(() => false)
+    }
+
+    const CancelWeightBtn = () => {
+        setActivateWeight(() => false)
+    }
+
+    /** height */
+    const onChangeMainHeight = (item) => {
+        setMainHeight(() => item)
+    }
+
+    const onChangeDecimalHeight = (item) => {
+        setDecimalHeight(() => item)
+    }
+
+    const AcceptHeightBtn = () => {
+        let heightString = `${mainHeight + ' ' + decimalHeight}`
+        setShowHeight(() => heightString)
+        setActivateHeight(() => false)
+    }
+
+    const CancelHeightBtn = () => {
+        setActivateHeight(() => false)
+    }
+
+    React.useEffect(() => {
+        const getData = async () => {
+            try {
+                const value = await AsyncStorage.getItem('@storage_pat')
+                if (value !== null) {
+                    // value previously stored
+                    setPatientsId(() => value)
+                }
+            } catch (e) {
+                // error reading value
+            }
+        }
+
+        getData()
+    }, [])
+
+    React.useEffect(() => {
+        if (isError) {
+            let toast = Toast.show(message, {
+                duration: Toast.durations.LONG,
+                position: 80,
+                backgroundColor: 'red',
+            })
+
+            setTimeout(function hideToast() {
+                Toast.hide(toast)
+            }, 8000)
+
+            if (message === 'Account already verified') {
+                setIsSubmittingp(false)
+                dispatch(reset())
+                navigation.navigate('Login')
+            }
+            setIsSubmittingp(false)
+            dispatch(reset())
+        }
+
+        if (isSuccess && message) {
+            let toast = Toast.show(message, {
+                duration: Toast.durations.LONG,
+                position: 80,
+                backgroundColor: 'green',
+            })
+
+            setTimeout(function hideToast() {
+                Toast.hide(toast)
+            }, 8000)
+
+            setIsSubmittingp(false)
+
+            navigation.navigate('Home')
+
+            dispatch(reset())
+        }
+    }, [isError, isSuccess, message, dispatch])
+
+    const handleSubmit = () => {
+        if (
+            fullname === '' ||
+            patientsId === '' ||
+            showHeight === '' ||
+            showWeight === '' ||
+            showDates === ''
+        ) {
+            let toast = Toast.show('Missing  fields', {
+                duration: Toast.durations.LONG,
+                position: 80,
+                backgroundColor: 'red',
+            })
+
+            setTimeout(function hideToast() {
+                Toast.hide(toast)
+            }, 8000)
+        } else {
+            let alldetails = {
+                fullname,
+                patientId: patientsId,
+                height: showHeight,
+                weight: showWeight,
+                birthday: showDates,
+            }
+
+            dispatch(RegisterOnboardInfo(alldetails))
+            setIsSubmittingp(() => true)
+        }
+    }
+
     return (
         <SafeAreaView style={{ flex: 1 }}>
             <StatusBar />
@@ -86,6 +239,7 @@ const OnboardingInfo = () => {
                             </Text>
                             <TextInput
                                 style={styles.inputTexts}
+                                value={patientsId}
                                 placeholder='Enter your ID number here...'
                             />
                         </Stack>
@@ -95,7 +249,11 @@ const OnboardingInfo = () => {
                             </Text>
                             <TextInput
                                 style={styles.inputTexts}
+                                value={fullname}
                                 placeholder='Enter your name here'
+                                onChangeText={(value) => {
+                                    setFullName(value)
+                                }}
                             />
                         </Stack>
                         <Stack spacing={8}>
@@ -180,27 +338,307 @@ const OnboardingInfo = () => {
                                 </View>
                             </Modal>
                         </Stack>
+
+                        {/** weight */}
                         <Stack spacing={8}>
                             <Text style={styles.inputLabel}>Weight</Text>
-                            <TextInput
-                                style={styles.inputTexts}
-                                placeholder='Please select your weight'
-                            />
+
+                            <TouchableWithoutFeedback
+                                onPress={() => setActivateWeight(() => true)}>
+                                <View style={styles.inputPickerContainer}>
+                                    {showWeight === '' ? (
+                                        <Text
+                                            style={styles.inputPickerText}
+                                            placeholder='Please select your weight'
+                                            inputMode='date'>
+                                            Please select your weight
+                                        </Text>
+                                    ) : (
+                                        <Text
+                                            style={styles.inputPickerText}
+                                            placeholder='Please select your weight'
+                                            inputMode='date'>
+                                            {showWeight}
+                                        </Text>
+                                    )}
+                                </View>
+                            </TouchableWithoutFeedback>
+                            <Modal
+                                style={{
+                                    backgroundColor: 'rgba(0,0,0,0.1)',
+                                    marginTop: 0,
+                                }}
+                                animationType='slide'
+                                transparent={true}
+                                visible={activateWeight}>
+                                <View
+                                    style={{
+                                        backgroundColor: 'rgba(0,0,0,0.5)',
+
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                        flex: 1,
+                                    }}>
+                                    <Stack spacing={30}>
+                                        <Stack
+                                            w='40%'
+                                            direction='row'
+                                            style={styles.weightContainer}>
+                                            <Picker
+                                                selectedValue={mainWeight}
+                                                onValueChange={(item) =>
+                                                    onChangeMainWeight(item)
+                                                }
+                                                style={{
+                                                    width: '25%',
+                                                    backgroundColor:
+                                                        'rgba(0,0,0,0.0)',
+                                                }}>
+                                                {[...Array(150)].map(
+                                                    (data, index) => {
+                                                        return (
+                                                            <Picker.Item
+                                                                key={index}
+                                                                label={`${
+                                                                    index + 1
+                                                                }`}
+                                                                value={`${
+                                                                    index + 1
+                                                                }`}
+                                                            />
+                                                        )
+                                                    }
+                                                )}
+                                            </Picker>
+
+                                            <Stack
+                                                style={{
+                                                    width: '10%',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    paddingBottom: 16,
+                                                }}>
+                                                <Text style={{ fontSize: 50 }}>
+                                                    .
+                                                </Text>
+                                            </Stack>
+
+                                            <Picker
+                                                selectedValue={decimalWeight}
+                                                onValueChange={(item) =>
+                                                    onChangeDecimalWeight(item)
+                                                }
+                                                value='9'
+                                                style={{
+                                                    height: 50,
+                                                    width: '25%',
+                                                }}>
+                                                {[...Array(10)].map(
+                                                    (data, index) => {
+                                                        return (
+                                                            <Picker.Item
+                                                                key={index}
+                                                                label={`${index}`}
+                                                                value={`${index}`}
+                                                            />
+                                                        )
+                                                    }
+                                                )}
+                                            </Picker>
+
+                                            <Picker
+                                                style={{
+                                                    height: 50,
+                                                    width: '25%',
+                                                    padding: 0,
+                                                }}>
+                                                <Picker.Item
+                                                    color='black'
+                                                    label={'kg'}
+                                                    value={'kg'}
+                                                />
+                                            </Picker>
+                                        </Stack>
+
+                                        <TouchableOpacity
+                                            onPress={AcceptWeightBtn}
+                                            style={styles.dateBtn}>
+                                            <Text style={styles.dateBtnText}>
+                                                Continue
+                                            </Text>
+                                        </TouchableOpacity>
+
+                                        <TouchableOpacity
+                                            onPress={CancelWeightBtn}
+                                            style={styles.dateBtn}>
+                                            <Text style={styles.dateBtnText}>
+                                                Cancel
+                                            </Text>
+                                        </TouchableOpacity>
+                                    </Stack>
+                                </View>
+                            </Modal>
                         </Stack>
+
+                        {/** height */}
                         <Stack spacing={8}>
                             <Text style={styles.inputLabel}>Height</Text>
-                            <TextInput
-                                style={styles.inputTexts}
-                                placeholder='Please select your height'
-                            />
+
+                            <TouchableWithoutFeedback
+                                onPress={() => setActivateHeight(() => true)}>
+                                <View style={styles.inputPickerContainer}>
+                                    {showHeight === '' ? (
+                                        <Text
+                                            style={styles.inputPickerText}
+                                            placeholder='Please select your height'
+                                            inputMode='date'>
+                                            Please select your height
+                                        </Text>
+                                    ) : (
+                                        <Text
+                                            style={styles.inputPickerText}
+                                            placeholder='Please select your height'
+                                            inputMode='date'>
+                                            {showHeight}
+                                        </Text>
+                                    )}
+                                </View>
+                            </TouchableWithoutFeedback>
+
+                            <Modal
+                                style={{
+                                    backgroundColor: 'rgba(0,0,0,0.1)',
+                                    marginTop: 0,
+                                }}
+                                animationType='slide'
+                                transparent={true}
+                                visible={activateHeight}>
+                                <View
+                                    style={{
+                                        backgroundColor: 'rgba(0,0,0,0.5)',
+
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                        flex: 1,
+                                    }}>
+                                    <Stack spacing={30}>
+                                        <Stack
+                                            w='40%'
+                                            direction='row'
+                                            style={styles.weightContainer}>
+                                            <Picker
+                                                selectedValue={mainHeight}
+                                                onValueChange={(item) =>
+                                                    onChangeMainHeight(item)
+                                                }
+                                                style={{
+                                                    width: '33%',
+                                                    backgroundColor:
+                                                        'rgba(0,0,0,0.0)',
+                                                }}>
+                                                {[...Array(7)].map(
+                                                    (data, index) => {
+                                                        if (
+                                                            index + 1 === 1 ||
+                                                            index + 1 === 2 ||
+                                                            index + 1 === 3
+                                                        ) {
+                                                            return null
+                                                        } else {
+                                                            return (
+                                                                <Picker.Item
+                                                                    key={index}
+                                                                    label={`${
+                                                                        index +
+                                                                        1
+                                                                    }'`}
+                                                                    value={`${
+                                                                        index +
+                                                                        1
+                                                                    }'`}
+                                                                />
+                                                            )
+                                                        }
+                                                    }
+                                                )}
+                                            </Picker>
+
+                                            <Stack
+                                                style={{
+                                                    width: '10%',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    paddingBottom: 16,
+                                                }}>
+                                                <Text
+                                                    style={{
+                                                        fontSize: 50,
+                                                    }}></Text>
+                                            </Stack>
+
+                                            <Picker
+                                                selectedValue={decimalHeight}
+                                                onValueChange={(item) =>
+                                                    onChangeDecimalHeight(item)
+                                                }
+                                                value='9'
+                                                style={{
+                                                    height: 50,
+                                                    width: '33%',
+                                                }}>
+                                                {[...Array(8)].map(
+                                                    (data, index) => {
+                                                        return (
+                                                            <Picker.Item
+                                                                key={index}
+                                                                label={`${index}''`}
+                                                                value={`${index}''`}
+                                                            />
+                                                        )
+                                                    }
+                                                )}
+                                            </Picker>
+                                        </Stack>
+
+                                        <TouchableOpacity
+                                            onPress={AcceptHeightBtn}
+                                            style={styles.dateBtn}>
+                                            <Text style={styles.dateBtnText}>
+                                                Continue
+                                            </Text>
+                                        </TouchableOpacity>
+
+                                        <TouchableOpacity
+                                            onPress={CancelHeightBtn}
+                                            style={styles.dateBtn}>
+                                            <Text style={styles.dateBtnText}>
+                                                Cancel
+                                            </Text>
+                                        </TouchableOpacity>
+                                    </Stack>
+                                </View>
+                            </Modal>
                         </Stack>
 
                         {/** button */}
 
                         <Stack spacing={10}>
-                            <TouchableOpacity style={styles.nextBtn}>
-                                <Text style={styles.nextBtnText}>Continue</Text>
-                            </TouchableOpacity>
+                            {isSubmittingp ? (
+                                <View style={styles.nextBtn}>
+                                    <ActivityIndicator
+                                        size='small'
+                                        color='white'
+                                    />
+                                </View>
+                            ) : (
+                                <TouchableOpacity
+                                    onPress={handleSubmit}
+                                    style={styles.nextBtn}>
+                                    <Text style={styles.nextBtnText}>
+                                        Continue
+                                    </Text>
+                                </TouchableOpacity>
+                            )}
 
                             <Text style={styles.termsText}>
                                 by clicking start, you agree to our{' '}
@@ -272,6 +710,13 @@ const styles = StyleSheet.create({
         color: 'rgba(22, 25, 28, 1)',
         fontFamily: 'Roboto_Regular',
         fontSize: 15,
+    },
+
+    weightContainer: {
+        width: '90%',
+        color: '#000',
+        backgroundColor: '#fff',
+        borderRadius: 20,
     },
 
     dateContainer: {

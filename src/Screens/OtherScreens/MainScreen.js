@@ -20,17 +20,95 @@ import { MaterialIcons } from '@expo/vector-icons'
 import { Fontisto } from '@expo/vector-icons'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 import { FontAwesome5 } from '@expo/vector-icons'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import Moments from 'moment-timezone'
 
-const MainScreen = () => {
+import { useDispatch, useSelector } from 'react-redux'
+import Toast from 'react-native-root-toast'
+import {
+    reset,
+    MainRecentVitalReading,
+} from '../../Store/features/vitals/vitalSlice'
+
+const MainScreen = ({ navigation }) => {
+    let dispatch = useDispatch()
+    const [pName, setPName] = React.useState('')
+    const day = Moments().tz('Africa/Nairobi').format('Do')
+    const Month = Moments().tz('Africa/Nairobi').format('MMMM')
+
+    React.useEffect(() => {
+        dispatch(MainRecentVitalReading())
+    }, [])
+
+    const { isError, isSuccess, message, mainrecents } = useSelector(
+        (state) => state.vitals
+    )
+    React.useEffect(() => {
+        const getData = async () => {
+            try {
+                const jsonValue = await AsyncStorage.getItem('@user')
+                if (jsonValue !== null) {
+                    let values = JSON.parse(jsonValue)
+                    let getFirstName = values.fullname.split(' ')[0]
+                    //console.log('vv', values, getFirstName)
+
+                    setPName(() => getFirstName)
+                }
+                return
+            } catch (e) {
+                // error reading value
+            }
+        }
+
+        getData()
+    }, [])
+
+    React.useEffect(() => {
+        if (isError) {
+            let toast = Toast.show(message, {
+                duration: Toast.durations.LONG,
+                position: 80,
+                backgroundColor: 'red',
+            })
+
+            setTimeout(function hideToast() {
+                Toast.hide(toast)
+            }, 8000)
+
+            dispatch(reset())
+        }
+    }, [isError, isSuccess, message, dispatch])
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
             <StatusBar />
             <Stack style={styles.container}>
                 {/** Date & Welcome */}
                 <Stack h='15%' style={styles.welcomeContainer}>
-                    <Text style={styles.textDate}>22 January</Text>
+                    <Stack
+                        direction='row'
+                        alignItems='center'
+                        justifyContent='space-between'>
+                        <Text style={styles.textDate}>
+                            {day} {Month}
+                        </Text>
 
-                    <Text style={styles.textWelcome}>Hi, Jane</Text>
+                        <TouchableOpacity
+                            onPress={() => navigation.navigate('MyAccount')}>
+                            <Stack
+                                direction='row'
+                                alignItems='center'
+                                spacing={5}>
+                                <MaterialIcons
+                                    name='settings'
+                                    size={20}
+                                    color='#8E8E93'
+                                />
+                                <Text style={styles.textDate}>Settings</Text>
+                            </Stack>
+                        </TouchableOpacity>
+                    </Stack>
+
+                    <Text style={styles.textWelcome}>Hi, {pName}</Text>
                 </Stack>
                 {/** rest of the content */}
                 <Stack h='90%' style={styles.contentContainer} spacing={'15%'}>
@@ -38,7 +116,10 @@ const MainScreen = () => {
                     <Stack spacing={15}>
                         <HStack justify='space-between' items='center'>
                             <Text style={styles.linkHead}>Today</Text>
-                            <TouchableOpacity>
+                            <TouchableOpacity
+                                onPress={() =>
+                                    navigation.navigate('HealthVitals')
+                                }>
                                 <HStack items='center'>
                                     <Text style={styles.linkText}>See All</Text>
                                     <MaterialIcons
@@ -64,10 +145,12 @@ const MainScreen = () => {
                                     />
                                 </Box>
 
-                                <HStack alignItems='center' spacing={5}>
-                                    <Text style={styles.statsNum}>120</Text>{' '}
+                                <Stack alignItems='flex-start' spacing={2}>
+                                    <Text style={styles.statsNum}>
+                                        {mainrecents.BGlucoseVital}
+                                    </Text>{' '}
                                     <Text style={styles.statsDesc}>mg/dl</Text>
-                                </HStack>
+                                </Stack>
                                 <Text style={styles.statsCardTitle}>
                                     Blood glucose
                                 </Text>
@@ -85,10 +168,12 @@ const MainScreen = () => {
                                     />
                                 </Box>
 
-                                <HStack alignItems='center' spacing={5}>
-                                    <Text style={styles.statsNum}>141</Text>{' '}
+                                <Stack alignItems='flex-start' spacing={2}>
+                                    <Text style={styles.statsNum}>
+                                        {mainrecents.BPressureVital}
+                                    </Text>{' '}
                                     <Text style={styles.statsDesc}>mm/gh</Text>
-                                </HStack>
+                                </Stack>
                                 <Text style={styles.statsCardTitle}>
                                     Blood pressure
                                 </Text>
@@ -102,7 +187,10 @@ const MainScreen = () => {
                             <Text style={styles.linkHead}>
                                 Measure vital signs
                             </Text>
-                            <TouchableOpacity>
+                            <TouchableOpacity
+                                onPress={() =>
+                                    navigation.navigate('MainLogTime')
+                                }>
                                 <HStack items='center'>
                                     <Text style={styles.linkText}>See All</Text>
                                     <MaterialIcons
@@ -133,7 +221,13 @@ const MainScreen = () => {
                                     Blood Glucose
                                 </Text>
 
-                                <TouchableOpacity style={styles.measureBtn}>
+                                <TouchableOpacity
+                                    style={styles.measureBtn}
+                                    onPress={() =>
+                                        navigation.navigate('LogTime', {
+                                            vital: 'Blood Glucose',
+                                        })
+                                    }>
                                     <Text style={styles.measureBtnText}>
                                         Measure
                                     </Text>
@@ -156,7 +250,13 @@ const MainScreen = () => {
                                     Fitness Activites
                                 </Text>
 
-                                <TouchableOpacity style={styles.measureBtn}>
+                                <TouchableOpacity
+                                    style={styles.measureBtn}
+                                    onPress={() =>
+                                        navigation.navigate('LogTime', {
+                                            vital: 'Fitness Activities',
+                                        })
+                                    }>
                                     <Text style={styles.measureBtnText}>
                                         Measure
                                     </Text>

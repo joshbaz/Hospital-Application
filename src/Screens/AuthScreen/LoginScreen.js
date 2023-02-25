@@ -7,24 +7,82 @@ import {
     TouchableOpacity,
     TouchableWithoutFeedback,
     Keyboard,
+    ActivityIndicator,
+    View,
 } from 'react-native'
 import React from 'react'
 import { Text, Stack, Box, HStack } from '@react-native-material/core'
 import { Ionicons } from '@expo/vector-icons'
-import { useDispatch } from 'react-redux'
-import { Login } from '../../Store/features/auth/authSlice'
+import { useDispatch, useSelector } from 'react-redux'
+import { Login, reset } from '../../Store/features/auth/authSlice'
+import Toast from 'react-native-root-toast'
+import { Formik } from 'formik'
+import * as yup from 'yup'
 const LoginScreen = ({ navigation }) => {
     let dispatch = useDispatch()
     const [valueText, setValueText] = React.useState('passkey')
     const [textSecure, setTextSecure] = React.useState(true)
+    const [helperFunctions, setHelperFunctions] = React.useState(null)
+    const [isSubmittingp, setIsSubmittingp] = React.useState(false)
 
     const onChangeSecure = () => {
         setTextSecure(!textSecure)
     }
 
-    const onSendClick = () => {
-        dispatch(Login())
-    }
+    //validation schema
+    const validationSchema = yup.object().shape({
+        phoneNumber: yup.string().required('required'),
+        password: yup.string().required('password is required'),
+    })
+
+    const { user, isError, isSuccess, message } = useSelector(
+        (state) => state.auth
+    )
+
+    React.useEffect(() => {
+        if (isError) {
+            if (helperFunctions !== null) {
+                helperFunctions.setSubmitting(false)
+
+                setIsSubmittingp(false)
+            }
+            let toast = Toast.show(message, {
+                duration: Toast.durations.LONG,
+                position: 80,
+                backgroundColor: 'red',
+            })
+
+            setTimeout(function hideToast() {
+                Toast.hide(toast)
+            }, 8000)
+
+            dispatch(reset())
+        }
+
+        if (isSuccess && isSubmittingp) {
+            if (helperFunctions !== null) {
+                let toast = Toast.show('successfully loggedIn', {
+                    duration: Toast.durations.LONG,
+                    position: 80,
+                })
+
+                setTimeout(function hideToast() {
+                    Toast.hide(toast)
+                }, 8000)
+                helperFunctions.resetForm()
+                helperFunctions.setSubmitting(false)
+                setIsSubmittingp(false)
+                setHelperFunctions(null)
+                if (user.onBoardInfo) {
+                    console.log('test')
+                    navigation.navigate('Home')
+                } else {
+                    navigation.navigate('OnboardingScreen')
+                }
+            }
+            dispatch(reset())
+        }
+    }, [isError, isSuccess, message, dispatch])
     return (
         <KeyboardAvoidingView
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -40,69 +98,106 @@ const LoginScreen = ({ navigation }) => {
                         </Text>
                     </Stack>
 
-                    <Stack w='100%' spacing={31}>
-                        {/** inputs */}
-                        <Stack w='100%' items='center' spacing={20}>
-                            <TextInput
-                                style={styles.inputs}
-                                placeholderTextColor='rgba(22, 25, 28, 0.2)'
-                                placeholder='Mobile number'
-                                value=''
-                            />
+                    <Formik
+                        initialValues={{
+                            phoneNumber: '',
+                            password: '',
+                        }}
+                        validationSchema={validationSchema}
+                        onSubmit={(values, helpers) => {
+                            setHelperFunctions(helpers)
+                            dispatch(Login(values))
+                            setIsSubmittingp(() => true)
+                        }}>
+                        {({
+                            values,
+                            handleChange,
+                            handleBlur,
+                            handleSubmit,
+                        }) => (
+                            <Stack w='100%' spacing={31}>
+                                {/** inputs */}
+                                <Stack w='100%' items='center' spacing={20}>
+                                    <TextInput
+                                        style={styles.inputs}
+                                        placeholderTextColor='rgba(22, 25, 28, 0.2)'
+                                        placeholder='Mobile number'
+                                        value={values.mobileNumber}
+                                        onChangeText={handleChange(
+                                            'phoneNumber'
+                                        )}
+                                        onBlur={handleBlur('phoneNumber')}
+                                    />
 
-                            <HStack style={styles.passwordContainer}>
-                                <TextInput
-                                    style={styles.passwordInput}
-                                    secureTextEntry={textSecure}
-                                    placeholderTextColor='rgba(22, 25, 28, 0.2)'
-                                    placeholder='Password'
-                                    value={valueText}
-                                />
-                                {textSecure ? (
-                                    <Pressable
-                                        onPress={onChangeSecure}
-                                        style={styles.passwordIcon}>
-                                        <Ionicons
-                                            name='ios-eye-off-outline'
-                                            size={25}
-                                            color='black'
+                                    <HStack style={styles.passwordContainer}>
+                                        <TextInput
+                                            style={styles.passwordInput}
+                                            secureTextEntry={textSecure}
+                                            placeholderTextColor='rgba(22, 25, 28, 0.2)'
+                                            placeholder='Password'
+                                            value={values.password}
+                                            onChangeText={handleChange(
+                                                'password'
+                                            )}
+                                            onBlur={handleBlur('password')}
                                         />
-                                    </Pressable>
-                                ) : (
-                                    <Pressable
-                                        onPress={onChangeSecure}
-                                        style={styles.passwordIcon}>
-                                        <Ionicons
-                                            name='eye-outline'
-                                            size={25}
-                                            color='black'
-                                        />
-                                    </Pressable>
-                                )}
-                            </HStack>
-                        </Stack>
+                                        {textSecure ? (
+                                            <Pressable
+                                                onPress={onChangeSecure}
+                                                style={styles.passwordIcon}>
+                                                <Ionicons
+                                                    name='ios-eye-off-outline'
+                                                    size={25}
+                                                    color='black'
+                                                />
+                                            </Pressable>
+                                        ) : (
+                                            <Pressable
+                                                onPress={onChangeSecure}
+                                                style={styles.passwordIcon}>
+                                                <Ionicons
+                                                    name='eye-outline'
+                                                    size={25}
+                                                    color='black'
+                                                />
+                                            </Pressable>
+                                        )}
+                                    </HStack>
+                                </Stack>
 
-                        {/** button & signup */}
-                        <Stack w='100%' items='center' spacing={20}>
-                            <TouchableOpacity
-                                onPress={() => onSendClick()}
-                                style={styles.buttonStyles}>
-                                <Text style={styles.buttonText}>
-                                    Sign in my Account
-                                </Text>
-                            </TouchableOpacity>
-                            <Text style={styles.accText}>
-                                Don't have an account? -{' '}
-                                <Text
-                                    onPress={() =>
-                                        navigation.navigate('Register')
-                                    }
-                                    style={styles.signUpText}>
-                                    Sign Up
-                                </Text>
-                            </Text>
-                        </Stack>
-                    </Stack>
+                                {/** button & signup */}
+                                <Stack w='100%' items='center' spacing={20}>
+                                    {isSubmittingp ? (
+                                        <View style={styles.buttonStyles}>
+                                            <ActivityIndicator
+                                                size='small'
+                                                color='white'
+                                            />
+                                        </View>
+                                    ) : (
+                                        <TouchableOpacity
+                                            onPress={handleSubmit}
+                                            style={styles.buttonStyles}>
+                                            <Text style={styles.buttonText}>
+                                                Sign in my Account
+                                            </Text>
+                                        </TouchableOpacity>
+                                    )}
+
+                                    <Text style={styles.accText}>
+                                        Don't have an account? -{' '}
+                                        <Text
+                                            onPress={() =>
+                                                navigation.navigate('Register')
+                                            }
+                                            style={styles.signUpText}>
+                                            Sign Up
+                                        </Text>
+                                    </Text>
+                                </Stack>
+                            </Stack>
+                        )}
+                    </Formik>
                 </Stack>
             </TouchableWithoutFeedback>
         </KeyboardAvoidingView>

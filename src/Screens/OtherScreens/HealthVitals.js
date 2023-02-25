@@ -27,23 +27,7 @@ import {
     ContributionGraph,
     StackedBarChart,
 } from 'react-native-chart-kit'
-import {
-    VictoryLabel,
-    VictoryTheme,
-    VictoryArea,
-    VictoryAxis,
-    VictoryBar,
-    VictoryCandlestick,
-    VictoryChart,
-    VictoryGroup,
-    VictoryLine,
-    VictoryPie,
-    VictoryScatter,
-    VictoryStack,
-    VictoryErrorBar,
-    VictoryVoronoiTooltip,
-    VictoryTooltip,
-} from 'victory-native'
+import { VictoryAxis, VictoryBar, VictoryChart } from 'victory-native'
 import BPressureTab from '../../components/HealthVitals/BPressureTab'
 
 const windowWidth = Dimensions.get('window').width
@@ -456,7 +440,6 @@ const styles = StyleSheet.create({
         paddingRight: '5%',
         paddingBottom: '7%',
         borderWidth: 1,
-
     },
     mstatsHead: {
         color: '#16191C',

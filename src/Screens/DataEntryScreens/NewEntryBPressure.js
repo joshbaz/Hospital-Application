@@ -13,6 +13,7 @@ import {
     Dimensions,
     processColor,
     ScrollView,
+    ActivityIndicator,
 } from 'react-native'
 
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -29,13 +30,35 @@ import { FontAwesome5 } from '@expo/vector-icons'
 
 import { List, Switch, Divider } from 'react-native-paper'
 import DateTimePicker from '@react-native-community/datetimepicker'
+import { useDispatch, useSelector } from 'react-redux'
+import Toast from 'react-native-root-toast'
+import {
+    createVitalBPressure,
+    reset,
+} from '../../Store/features/vitals/vitalSlice'
+import moment from 'moment-timezone'
 
-const NewEntryBPressure = () => {
+const NewEntryBPressure = ({ route, navigation }) => {
+    let dispatch = useDispatch()
     const [date, setDate] = React.useState(new Date())
     const [mode, setMode] = React.useState('date')
     const [activateDate, setActivateDate] = React.useState(false)
     const [showDates, setShowDates] = React.useState('')
     const [showTime, setShowTime] = React.useState('')
+
+    const [sysValue, setSysValue] = React.useState(null)
+    const [diaValue, setDiaValue] = React.useState(null)
+    const [pulseValue, setPulseValue] = React.useState(null)
+
+    const [activateSysValue, setActivateSysValue] = React.useState(false)
+    const [activateDiaValue, setActivateDiaValue] = React.useState(false)
+    const [activatePulseValue, setActivatePulseValue] = React.useState(false)
+
+    const [isSubmittingp, setIsSubmittingp] = React.useState(false)
+
+    const { isError, isSuccess, message } = useSelector((state) => state.vitals)
+
+    const { vital, vitalTimelineType } = route.params
 
     const onChange = (event, selectedDate) => {
         const currentDate = selectedDate || date
@@ -45,14 +68,14 @@ const NewEntryBPressure = () => {
         let tempDate = new Date(currentDate)
         let fDate =
             tempDate.getDate() +
-            '/' +
+            ' ' +
             (tempDate.getMonth() + 1) +
-            '/' +
+            ' ' +
             tempDate.getFullYear()
 
         let fTime =
             `${tempDate.getHours()}` +
-            '.' +
+            ':' +
             `${tempDate.getMinutes()}` +
             ' ' +
             `${tempDate.getHours() >= 12 ? 'PM' : 'AM'}`
@@ -81,15 +104,17 @@ const NewEntryBPressure = () => {
 
     const iosAcceptBtn = () => {
         let tempDate = new Date(date)
+        let momentDate = moment(date)
+        console.log('moments', momentDate)
         let fDate =
             tempDate.getDate() +
-            '/' +
+            ' ' +
             (tempDate.getMonth() + 1) +
-            '/' +
+            ' ' +
             tempDate.getFullYear()
         let fTime =
             `${tempDate.getHours()}` +
-            '.' +
+            ':' +
             `${tempDate.getMinutes()}` +
             ' ' +
             `${tempDate.getHours() >= 12 ? 'PM' : 'AM'}`
@@ -104,6 +129,79 @@ const NewEntryBPressure = () => {
     const iosCancelBtn = () => {
         setActivateDate(() => false)
     }
+
+    React.useEffect(() => {
+        if (isError) {
+            let toast = Toast.show(message, {
+                duration: Toast.durations.LONG,
+                position: 80,
+                backgroundColor: 'red',
+            })
+
+            setTimeout(function hideToast() {
+                Toast.hide(toast)
+            }, 8000)
+
+            setIsSubmittingp(false)
+            dispatch(reset())
+        }
+
+        if (isSuccess && message) {
+            let toast = Toast.show(message, {
+                duration: Toast.durations.LONG,
+                position: 80,
+                backgroundColor: 'green',
+            })
+
+            setTimeout(function hideToast() {
+                Toast.hide(toast)
+            }, 8000)
+
+            setIsSubmittingp(false)
+
+            navigation.navigate('EntrySymptoms')
+
+            dispatch(reset())
+        }
+    }, [isError, isSuccess, message, dispatch])
+
+    const handleSubmit = () => {
+        if (
+            sysValue === null ||
+            sysValue === '' ||
+            diaValue === null ||
+            diaValue === '' ||
+            pulseValue === null ||
+            pulseValue === '' ||
+            showTime === '' ||
+            vital === '' ||
+            vitalTimelineType === '' ||
+            showDates === ''
+        ) {
+            let toast = Toast.show('Missing  fields', {
+                duration: Toast.durations.LONG,
+                position: 80,
+                backgroundColor: 'red',
+            })
+
+            setTimeout(function hideToast() {
+                Toast.hide(toast)
+            }, 8000)
+        } else {
+            let momentDate = moment(date)
+            let alldetails = {
+                vitalTimelineType,
+                sysValue,
+                diaValue,
+                pulseValue,
+                currentTime: showTime,
+                currentDate: momentDate,
+            }
+
+            dispatch(createVitalBPressure(alldetails))
+            setIsSubmittingp(() => true)
+        }
+    }
     return (
         <Stack style={styles.container}>
             <StatusBar />
@@ -113,159 +211,275 @@ const NewEntryBPressure = () => {
                 h={Platform.OS === 'ios' ? 48 : 48}
                 style={styles.titleContainer}>
                 <Text style={styles.textTitle}>Blood Pressure</Text>
+                <Text>({vitalTimelineType})</Text>
             </HStack>
 
             {/** rest of the content */}
-            <ScrollView
-                contentContainerStyle={{
-                    flexGrow: 1,
-                    justifyContent: 'center',
-                    width: '100%',
-                    marginTop: 0,
-                }}>
-                <Stack
-                    spacing={'10%'}
-                    h={Platform.OS === 'ios' ? '100%' : '100%'}
-                    style={{
-                        paddingBottom: Platform.OS === 'ios' ? 200 : 200,
-                        backgroundColor: '#f9fafa',
-                        paddingLeft: 15,
-                        paddingRight: 15,
-                        paddingTop: 20,
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                <ScrollView
+                    contentContainerStyle={{
+                        flexGrow: 1,
+                        justifyContent: 'center',
+                        width: '100%',
+                        marginTop: 0,
                     }}>
-                    <Stack spacing={12}>
-                        {/** sys value */}
-                        <HStack style={styles.cardContainer}>
-                            <Stack>
-                                <Text style={styles.cardSubHead}>SYS</Text>
-
-                                <HStack
-                                    justifyContent='center'
-                                    alignItems='center'
-                                    spacing={12}>
-                                    <Text style={styles.cardValue}>0</Text>
-                                    <Text style={styles.cardValueType}>
-                                        mmHg
-                                    </Text>
-                                </HStack>
-                            </Stack>
-
-                            <TouchableOpacity style={styles.cardBtn}>
-                                <Text style={styles.cardBtnText}>Edit</Text>
-                            </TouchableOpacity>
-                        </HStack>
-
-                        {/** DIA */}
-                        <HStack style={styles.cardContainer}>
-                            <Stack>
-                                <Text style={styles.cardSubHead}>DIA</Text>
-
-                                <HStack
-                                    justifyContent='center'
-                                    alignItems='center'
-                                    spacing={12}>
-                                    <Text style={styles.cardValue}>0</Text>
-                                    <Text style={styles.cardValueType}>
-                                        mmHg
-                                    </Text>
-                                </HStack>
-                            </Stack>
-
-                            <TouchableOpacity style={styles.cardBtn}>
-                                <Text style={styles.cardBtnText}>Edit</Text>
-                            </TouchableOpacity>
-                        </HStack>
-
-                        {/** pulse value */}
-                        <HStack style={styles.cardContainer}>
-                            <Stack>
-                                <Text style={styles.cardSubHead}>PULSE</Text>
-
-                                <HStack
-                                    justifyContent='center'
-                                    alignItems='center'
-                                    spacing={12}>
-                                    <Text style={styles.cardValue}>0</Text>
-                                    <Text style={styles.cardValueType}>
-                                        /min
-                                    </Text>
-                                </HStack>
-                            </Stack>
-
-                            <TouchableOpacity style={styles.cardBtn}>
-                                <Text style={styles.cardBtnText}>Edit</Text>
-                            </TouchableOpacity>
-                        </HStack>
-
-                        {/** date */}
-                        <TouchableOpacity onPress={() => showMode('date')}>
+                    <Stack
+                        spacing={'10%'}
+                        h={Platform.OS === 'ios' ? '100%' : '100%'}
+                        style={{
+                            paddingBottom: Platform.OS === 'ios' ? 200 : 200,
+                            backgroundColor: '#f9fafa',
+                            paddingLeft: 15,
+                            paddingRight: 15,
+                            paddingTop: 20,
+                        }}>
+                        <Stack spacing={12}>
+                            {/** sys value */}
                             <HStack style={styles.cardContainer}>
-                                <HStack spacing={20} alignItems='center'>
-                                    <View style={styles.cardIcon}>
-                                        <MaterialCommunityIcons
-                                            name='calendar-month'
-                                            size={26}
-                                            color='#3e66fb'
-                                        />
-                                    </View>
+                                <Stack>
+                                    <Text style={styles.cardSubHead}>SYS</Text>
+
+                                    <HStack
+                                        justifyContent='center'
+                                        alignItems='center'
+                                        spacing={12}>
+                                        {activateSysValue ? (
+                                            <TextInput
+                                                inputMode='decimal'
+                                                keyboardType='decimal-pad'
+                                                style={styles.cardValue}
+                                                placeholder='0'
+                                                value={sysValue}
+                                                onChangeText={(value) => {
+                                                    setSysValue(value)
+                                                }}
+                                            />
+                                        ) : (
+                                            <Text style={styles.cardValue}>
+                                                {sysValue}
+                                            </Text>
+                                        )}
+                                        <Text style={styles.cardValueType}>
+                                            mmHg
+                                        </Text>
+                                    </HStack>
+                                </Stack>
+
+                                {activateSysValue ? (
+                                    <TouchableOpacity
+                                        style={styles.cardBtn}
+                                        onPress={() =>
+                                            setActivateSysValue(false)
+                                        }>
+                                        <Text style={styles.cardBtnText}>
+                                            Close
+                                        </Text>
+                                    </TouchableOpacity>
+                                ) : (
+                                    <TouchableOpacity
+                                        style={styles.cardBtn}
+                                        onPress={() =>
+                                            setActivateSysValue(true)
+                                        }>
+                                        <Text style={styles.cardBtnText}>
+                                            Edit
+                                        </Text>
+                                    </TouchableOpacity>
+                                )}
+                            </HStack>
+
+                            {/** DIA */}
+                            <HStack style={styles.cardContainer}>
+                                <Stack>
+                                    <Text style={styles.cardSubHead}>DIA</Text>
+
+                                    <HStack
+                                        justifyContent='center'
+                                        alignItems='center'
+                                        spacing={12}>
+                                        {activateDiaValue ? (
+                                            <TextInput
+                                                inputMode='decimal'
+                                                keyboardType='decimal-pad'
+                                                style={styles.cardValue}
+                                                placeholder='0'
+                                                value={diaValue}
+                                                onChangeText={(value) => {
+                                                    setDiaValue(value)
+                                                }}
+                                            />
+                                        ) : (
+                                            <Text style={styles.cardValue}>
+                                                {diaValue}
+                                            </Text>
+                                        )}
+                                        <Text style={styles.cardValueType}>
+                                            mmHg
+                                        </Text>
+                                    </HStack>
+                                </Stack>
+
+                                {activateDiaValue ? (
+                                    <TouchableOpacity
+                                        style={styles.cardBtn}
+                                        onPress={() =>
+                                            setActivateDiaValue(false)
+                                        }>
+                                        <Text style={styles.cardBtnText}>
+                                            Close
+                                        </Text>
+                                    </TouchableOpacity>
+                                ) : (
+                                    <TouchableOpacity
+                                        style={styles.cardBtn}
+                                        onPress={() =>
+                                            setActivateDiaValue(true)
+                                        }>
+                                        <Text style={styles.cardBtnText}>
+                                            Edit
+                                        </Text>
+                                    </TouchableOpacity>
+                                )}
+                            </HStack>
+
+                            {/** pulse value */}
+                            <HStack style={styles.cardContainer}>
+                                <Stack>
+                                    <Text style={styles.cardSubHead}>
+                                        PULSE
+                                    </Text>
+
+                                    <HStack
+                                        justifyContent='center'
+                                        alignItems='center'
+                                        spacing={12}>
+                                        {activatePulseValue ? (
+                                            <TextInput
+                                                inputMode='decimal'
+                                                keyboardType='decimal-pad'
+                                                style={styles.cardValue}
+                                                placeholder='0'
+                                                value={pulseValue}
+                                                onChangeText={(value) => {
+                                                    setPulseValue(value)
+                                                }}
+                                            />
+                                        ) : (
+                                            <Text style={styles.cardValue}>
+                                                {pulseValue}
+                                            </Text>
+                                        )}
+                                        <Text style={styles.cardValueType}>
+                                            /min
+                                        </Text>
+                                    </HStack>
+                                </Stack>
+
+                                {activatePulseValue ? (
+                                    <TouchableOpacity
+                                        style={styles.cardBtn}
+                                        onPress={() =>
+                                            setActivatePulseValue(false)
+                                        }>
+                                        <Text style={styles.cardBtnText}>
+                                            Close
+                                        </Text>
+                                    </TouchableOpacity>
+                                ) : (
+                                    <TouchableOpacity
+                                        style={styles.cardBtn}
+                                        onPress={() =>
+                                            setActivatePulseValue(true)
+                                        }>
+                                        <Text style={styles.cardBtnText}>
+                                            Edit
+                                        </Text>
+                                    </TouchableOpacity>
+                                )}
+                            </HStack>
+
+                            {/** date */}
+                            <TouchableOpacity onPress={() => showMode('date')}>
+                                <HStack style={styles.cardContainer}>
+                                    <HStack spacing={20} alignItems='center'>
+                                        <View style={styles.cardIcon}>
+                                            <MaterialCommunityIcons
+                                                name='calendar-month'
+                                                size={26}
+                                                color='#3e66fb'
+                                            />
+                                        </View>
+                                        <Stack>
+                                            <Text style={styles.cardSubHead}>
+                                                Date
+                                            </Text>
+                                            <Text style={styles.cardHead}>
+                                                {showDates !== ''
+                                                    ? showDates
+                                                    : '-'}
+                                            </Text>
+                                        </Stack>
+                                    </HStack>
+
                                     <Stack>
-                                        <Text style={styles.cardSubHead}>
-                                            Date
-                                        </Text>
-                                        <Text style={styles.cardHead}>
-                                            {showDates !== '' ? showDates : '-'}
-                                        </Text>
+                                        <MaterialIcons
+                                            name='keyboard-arrow-down'
+                                            size={40}
+                                            color='#9c9fa1'
+                                        />
                                     </Stack>
                                 </HStack>
+                            </TouchableOpacity>
 
-                                <Stack>
-                                    <MaterialIcons
-                                        name='keyboard-arrow-down'
-                                        size={40}
-                                        color='#9c9fa1'
-                                    />
-                                </Stack>
-                            </HStack>
-                        </TouchableOpacity>
+                            {/** time */}
+                            <TouchableOpacity onPress={() => showMode('time')}>
+                                <HStack style={styles.cardContainer}>
+                                    <HStack spacing={20} alignItems='center'>
+                                        <View style={styles.cardIcon}>
+                                            <MaterialCommunityIcons
+                                                name='clock-time-nine-outline'
+                                                size={26}
+                                                color='#3e66fb'
+                                            />
+                                        </View>
+                                        <Stack>
+                                            <Text style={styles.cardSubHead}>
+                                                Time
+                                            </Text>
+                                            <Text style={styles.cardHead}>
+                                                {' '}
+                                                {showTime !== ''
+                                                    ? showTime
+                                                    : '-'}
+                                            </Text>
+                                        </Stack>
+                                    </HStack>
 
-                        {/** time */}
-                        <TouchableOpacity onPress={() => showMode('time')}>
-                            <HStack style={styles.cardContainer}>
-                                <HStack spacing={20} alignItems='center'>
-                                    <View style={styles.cardIcon}>
-                                        <MaterialCommunityIcons
-                                            name='clock-time-nine-outline'
-                                            size={26}
-                                            color='#3e66fb'
-                                        />
-                                    </View>
                                     <Stack>
-                                        <Text style={styles.cardSubHead}>
-                                            Time
-                                        </Text>
-                                        <Text style={styles.cardHead}>
-                                            {' '}
-                                            {showTime !== '' ? showTime : '-'}
-                                        </Text>
+                                        <MaterialIcons
+                                            name='keyboard-arrow-down'
+                                            size={40}
+                                            color='#9c9fa1'
+                                        />
                                     </Stack>
                                 </HStack>
+                            </TouchableOpacity>
+                        </Stack>
 
-                                <Stack>
-                                    <MaterialIcons
-                                        name='keyboard-arrow-down'
-                                        size={40}
-                                        color='#9c9fa1'
-                                    />
-                                </Stack>
-                            </HStack>
-                        </TouchableOpacity>
+                        {isSubmittingp ? (
+                            <View style={styles.nextBtn}>
+                                <ActivityIndicator size='small' color='white' />
+                            </View>
+                        ) : (
+                            <TouchableOpacity
+                                onPress={handleSubmit}
+                                style={styles.nextBtn}>
+                                <Text style={styles.nextBtnText}>Continue</Text>
+                            </TouchableOpacity>
+                        )}
                     </Stack>
-
-                    <TouchableOpacity style={styles.nextBtn}>
-                        <Text style={styles.nextBtnText}>Continue</Text>
-                    </TouchableOpacity>
-                </Stack>
-            </ScrollView>
+                </ScrollView>
+            </TouchableWithoutFeedback>
 
             {/** modal for time and date */}
             {activateDate && (

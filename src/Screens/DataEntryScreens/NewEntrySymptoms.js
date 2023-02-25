@@ -13,6 +13,7 @@ import {
     Dimensions,
     processColor,
     ScrollView,
+    ActivityIndicator,
 } from 'react-native'
 
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -30,6 +31,12 @@ import { Ionicons } from '@expo/vector-icons'
 
 import { List, Switch, Divider } from 'react-native-paper'
 import DateTimePicker from '@react-native-community/datetimepicker'
+import { useDispatch, useSelector } from 'react-redux'
+import Toast from 'react-native-root-toast'
+import {
+    updateVitalSymptoms,
+    reset,
+} from '../../Store/features/vitals/vitalSlice'
 
 const listActivity = [
     {
@@ -61,16 +68,21 @@ const listActivity = [
     },
 ]
 
-const NewEntrySymptoms = () => {
+const NewEntrySymptoms = ({ route, navigation }) => {
+    let dispatch = useDispatch()
     const [emFeelingActivity, setEmFeelingActivity] = React.useState('')
     const [chosenActivity, setChosenActivity] = React.useState([])
 
+    const [isSubmittingp, setIsSubmittingp] = React.useState(false)
+
+    const { isError, isSuccess, message } = useSelector((state) => state.vitals)
     const onChangeEmFeeling = (emValue) => {
+         console.log(emValue)
         setEmFeelingActivity(() => emValue)
     }
     const onChangeActivity = (activityValue) => {
         let newChosen = [...chosenActivity]
-
+        console.log(newChosen)
         if (newChosen.length > 0) {
             let findSelected = newChosen.some(
                 (element) => element.title === activityValue
@@ -95,6 +107,63 @@ const NewEntrySymptoms = () => {
             setChosenActivity(() => newChosen)
         }
         //setSelectActivity(() => activityValue)
+    }
+
+    React.useEffect(() => {
+        if (isError) {
+            let toast = Toast.show(message, {
+                duration: Toast.durations.LONG,
+                position: 80,
+                backgroundColor: 'red',
+            })
+
+            setTimeout(function hideToast() {
+                Toast.hide(toast)
+            }, 8000)
+
+            setIsSubmittingp(false)
+            dispatch(reset())
+        }
+
+        if (isSuccess && message) {
+            let toast = Toast.show(message, {
+                duration: Toast.durations.LONG,
+                position: 80,
+                backgroundColor: 'green',
+            })
+
+            setTimeout(function hideToast() {
+                Toast.hide(toast)
+            }, 8000)
+
+            setIsSubmittingp(false)
+
+            navigation.navigate('Home')
+
+            dispatch(reset())
+        }
+    }, [isError, isSuccess, message, dispatch])
+
+    const handleSubmit = () => {
+        if (emFeelingActivity === null || emFeelingActivity === '') {
+            let toast = Toast.show('Missing  fields', {
+                duration: Toast.durations.LONG,
+                position: 80,
+                backgroundColor: 'red',
+            })
+
+            setTimeout(function hideToast() {
+                Toast.hide(toast)
+            }, 8000)
+        } else {
+            let alldetails = {
+                feeling: emFeelingActivity,
+                symptoms: chosenActivity,
+            }
+
+            dispatch(updateVitalSymptoms(alldetails))
+            setIsSubmittingp(() => true)
+        }
     }
 
     return (
@@ -334,9 +403,17 @@ const NewEntrySymptoms = () => {
                         </Stack>
                     </Stack>
 
-                    <TouchableOpacity style={styles.nextBtn}>
-                        <Text style={styles.nextBtnText}>Continue</Text>
-                    </TouchableOpacity>
+                    {isSubmittingp ? (
+                        <View style={styles.nextBtn}>
+                            <ActivityIndicator size='small' color='white' />
+                        </View>
+                    ) : (
+                        <TouchableOpacity
+                            onPress={handleSubmit}
+                            style={styles.nextBtn}>
+                            <Text style={styles.nextBtnText}>Continue</Text>
+                        </TouchableOpacity>
+                    )}
                 </Stack>
             </ScrollView>
         </Stack>
