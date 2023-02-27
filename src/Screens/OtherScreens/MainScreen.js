@@ -43,6 +43,18 @@ const MainScreen = ({ navigation }) => {
     const { isError, isSuccess, message, mainrecents } = useSelector(
         (state) => state.vitals
     )
+
+    const { user, isLoggedIn } = useSelector((state) => state.auth)
+
+    React.useEffect(() => {
+        if (isLoggedIn) {
+            if (user.onBoardInfo) {
+                // navigation.navigate('Home')
+            } else {
+                navigation.navigate('OnboardingScreen')
+            }
+        }
+    }, [user, isLoggedIn])
     React.useEffect(() => {
         const getData = async () => {
             try {

@@ -30,14 +30,51 @@ import {
 import { VictoryAxis, VictoryBar, VictoryChart } from 'victory-native'
 import BPressureTab from '../../components/HealthVitals/BPressureTab'
 
+import { useDispatch, useSelector } from 'react-redux'
+import Toast from 'react-native-root-toast'
+import {
+    StatisticalVitalGlucoseReading,
+    StatisticalVitalPressureReading,
+    reset,
+} from '../../Store/features/vitals/vitalSlice'
+import moment from 'moment-timezone'
+
 const windowWidth = Dimensions.get('window').width
 
-const HealthVitals = () => {
+const HealthVitals = ({navigation}) => {
+    let dispatch = useDispatch()
     const [activeTab, setActiveTab] = React.useState('glucose')
 
     const handleTabChange = (tabname) => {
         setActiveTab(() => tabname)
     }
+
+    const { isError, isSuccess, message, glucoseVitals, pressureVitals } =
+        useSelector((state) => state.vitals)
+
+    React.useEffect(() => {
+        dispatch(StatisticalVitalGlucoseReading())
+    }, [dispatch])
+
+    React.useEffect(() => {
+        dispatch(StatisticalVitalPressureReading())
+    }, [dispatch])
+
+    React.useEffect(() => {
+        if (isError) {
+            let toast = Toast.show(message, {
+                duration: Toast.durations.LONG,
+                position: 80,
+                backgroundColor: 'red',
+            })
+
+            setTimeout(function hideToast() {
+                Toast.hide(toast)
+            }, 8000)
+
+            dispatch(reset())
+        }
+    }, [isError, isSuccess, message, dispatch])
     return (
         <Stack style={styles.container}>
             {/** Title */}
@@ -87,7 +124,13 @@ const HealthVitals = () => {
                                     Blood glucose levels
                                 </Text>
 
-                                <TouchableOpacity style={styles.linkBtn}>
+                                <TouchableOpacity
+                                    onPress={() =>
+                                        navigation.navigate('LogTime', {
+                                            vital: 'Blood Glucose',
+                                        })
+                                    }
+                                    style={styles.linkBtn}>
                                     <Text style={styles.linkBtnText}>
                                         Measure
                                     </Text>
@@ -99,7 +142,9 @@ const HealthVitals = () => {
                                 <Text style={styles.avgStatHead}>
                                     Average Blood Sugar Level
                                 </Text>
-                                <Text style={styles.avgStatNum}>7.5</Text>
+                                <Text style={styles.avgStatNum}>
+                                    {glucoseVitals.avgVital}
+                                </Text>
                                 <Text style={styles.avgStatType}>mg/dl</Text>
                             </Stack>
 
@@ -118,13 +163,7 @@ const HealthVitals = () => {
                                                 width: windowWidth,
                                             },
                                         }}
-                                        data={[
-                                            { x: 'Mon14', y: 10 },
-                                            { x: 'Tue14', y: 25 },
-                                            { x: 'Wed14', y: 40 },
-                                            { x: 'Thur14', y: 50 },
-                                            { x: 'Fri14', y: 10 },
-                                        ]}
+                                        data={glucoseVitals.graphEntries}
                                         alignment='middle'
                                     />
                                     <VictoryAxis
@@ -224,7 +263,10 @@ const HealthVitals = () => {
                                         </Text>
                                     </Stack>
 
-                                    <Text style={styles.mstatsNum}>3.4</Text>
+                                    <Text style={styles.mstatsNum}>
+                                        {' '}
+                                        {glucoseVitals.lowestVital}
+                                    </Text>
                                 </Stack>
                                 <Stack
                                     style={[
@@ -251,7 +293,10 @@ const HealthVitals = () => {
                                             mg/dL
                                         </Text>
                                     </Stack>
-                                    <Text style={styles.mstatsNum}>8.9</Text>
+                                    <Text style={styles.mstatsNum}>
+                                        {' '}
+                                        {glucoseVitals.highestVital}
+                                    </Text>
                                 </Stack>
                             </HStack>
 
@@ -267,53 +312,93 @@ const HealthVitals = () => {
                                         <Text style={styles.recentEntSubHead}>
                                             Today
                                         </Text>
-                                        <HStack style={styles.recentEntEntry}>
-                                            <Text
-                                                style={
-                                                    styles.recentEntEntryDate
-                                                }>
-                                                Mon, 8:25 am
-                                            </Text>
-                                            <Text
-                                                style={
-                                                    styles.recentEntEntryValue
-                                                }>
-                                                5.0{' '}
-                                                <Text
-                                                    style={
-                                                        styles.recentEntEntryValueType
-                                                    }>
-                                                    mg/dl
-                                                </Text>
-                                            </Text>
-                                        </HStack>
+                                        {glucoseVitals.todayEntries.length >
+                                            0 && (
+                                            <Stack>
+                                                {glucoseVitals.todayEntries.map(
+                                                    (data) => {
+                                                        let day = moment(
+                                                            data.createdDate
+                                                        ).format('ddd, h:m a')
+                                                        return (
+                                                            <HStack
+                                                                key={data._id}
+                                                                style={
+                                                                    styles.recentEntEntry
+                                                                }>
+                                                                <Text
+                                                                    style={
+                                                                        styles.recentEntEntryDate
+                                                                    }>
+                                                                    {day}
+                                                                </Text>
+                                                                <Text
+                                                                    style={
+                                                                        styles.recentEntEntryValue
+                                                                    }>
+                                                                    {
+                                                                        data.healthVital
+                                                                    }
+                                                                    <Text
+                                                                        style={
+                                                                            styles.recentEntEntryValueType
+                                                                        }>
+                                                                        mg/dl
+                                                                    </Text>
+                                                                </Text>
+                                                            </HStack>
+                                                        )
+                                                    }
+                                                )}
+                                            </Stack>
+                                        )}
                                     </Stack>
 
                                     {/**  week entries */}
-                                    <Stack>
+                                    <Stack pb={60}>
                                         <Text style={styles.recentEntSubHead}>
                                             This Week
                                         </Text>
-                                        <HStack style={styles.recentEntEntry}>
-                                            <Text
-                                                style={
-                                                    styles.recentEntEntryDate
-                                                }>
-                                                Mon, 8:25 am
-                                            </Text>
-                                            <Text
-                                                style={
-                                                    styles.recentEntEntryValue
-                                                }>
-                                                5.0{' '}
-                                                <Text
-                                                    style={
-                                                        styles.recentEntEntryValueType
-                                                    }>
-                                                    mg/dl
-                                                </Text>
-                                            </Text>
-                                        </HStack>
+                                        {glucoseVitals.weekEntries.length >
+                                            0 && (
+                                            <Stack>
+                                                {glucoseVitals.weekEntries.map(
+                                                    (data) => {
+                                                        let day = moment(
+                                                            data.createdDate
+                                                        ).format('ddd, h:m a')
+                                                        return (
+                                                            <HStack
+                                                                key={data._id}
+                                                                style={
+                                                                    styles.recentEntEntry
+                                                                }>
+                                                                <Text
+                                                                    style={
+                                                                        styles.recentEntEntryDate
+                                                                    }>
+                                                                    {day}
+                                                                </Text>
+                                                                <Text
+                                                                    style={
+                                                                        styles.recentEntEntryValue
+                                                                    }>
+                                                                    {
+                                                                        data.healthVital
+                                                                    }
+                                                                    <Text
+                                                                        style={
+                                                                            styles.recentEntEntryValueType
+                                                                        }>
+                                                                        mg/dl
+                                                                    </Text>
+                                                                </Text>
+                                                            </HStack>
+                                                        )
+                                                    }
+                                                )}
+                                            </Stack>
+                                        )}
                                     </Stack>
                                 </Stack>
                             </Stack>

@@ -44,17 +44,27 @@ import {
     VictoryVoronoiTooltip,
     VictoryTooltip,
 } from 'victory-native'
-
+import { useSelector } from 'react-redux'
+import moment from 'moment-timezone'
 const windowWidth = Dimensions.get('window').width
+import { useNavigation } from '@react-navigation/native'
 
 const BPressureTab = () => {
+    const { pressureVitals } = useSelector((state) => state.vitals)
+     const navigation = useNavigation()
     return (
         <Stack spacing={20}>
             {/** measure link  */}
             <HStack justifyContent='space-between' alignItems='center'>
                 <Text style={styles.linkHead}>Blood pressure levels</Text>
 
-                <TouchableOpacity style={styles.linkBtn}>
+                <TouchableOpacity
+                    onPress={() =>
+                        navigation.navigate('LogTime', {
+                            vital: 'Blood Pressure',
+                        })
+                    }
+                    style={styles.linkBtn}>
                     <Text style={styles.linkBtnText}>Measure</Text>
                 </TouchableOpacity>
             </HStack>
@@ -63,7 +73,9 @@ const BPressureTab = () => {
             <Stack style={styles.avgStat}>
                 <Text style={styles.avgStatHead}>Blood Pressure Level</Text>
                 <Stack alignItems='center'>
-                    <Text style={styles.avgStatNum}>123/75</Text>
+                    <Text style={styles.avgStatNum}>
+                        {pressureVitals.avgVital}
+                    </Text>
                     <Text style={styles.avgStatType}>mm/Hg</Text>
                 </Stack>
 
@@ -121,13 +133,7 @@ const BPressureTab = () => {
                             },
                             parent: { border: '1px solid #ccc' },
                         }}
-                        data={[
-                            { x: 'Mon14', y: 10 },
-                            { x: 'Tue14', y: 25 },
-                            { x: 'Wed14', y: 40 },
-                            { x: 'Thur14', y: 50 },
-                            { x: 'Fri14', y: 10 },
-                        ]}
+                        data={pressureVitals.line1Entries}
                     />
                     <VictoryLine
                         interpolation='natural'
@@ -140,13 +146,7 @@ const BPressureTab = () => {
                             },
                             parent: { border: '1px solid #ccc' },
                         }}
-                        data={[
-                            { x: 'Mon14', y: 5 },
-                            { x: 'Tue14', y: 20 },
-                            { x: 'Wed14', y: 30 },
-                            { x: 'Thur14', y: 40 },
-                            { x: 'Fri14', y: 16 },
-                        ]}
+                        data={pressureVitals.line2Entries}
                     />
                     <VictoryAxis
                         style={{
@@ -236,7 +236,9 @@ const BPressureTab = () => {
                         </Text>
                     </Stack>
 
-                    <Text style={styles.mstatsNum}>134/79</Text>
+                    <Text style={styles.mstatsNum}>
+                        {pressureVitals.lowestVital}
+                    </Text>
                 </Stack>
                 <Stack
                     style={[
@@ -254,7 +256,10 @@ const BPressureTab = () => {
                             mm/Hg
                         </Text>
                     </Stack>
-                    <Text style={styles.mstatsNum}>143/82</Text>
+                    <Text style={styles.mstatsNum}>
+                        {' '}
+                        {pressureVitals.highestVital}
+                    </Text>
                 </Stack>
             </HStack>
 
@@ -264,33 +269,77 @@ const BPressureTab = () => {
                 <Stack style={styles.recentEntContainer} spacing={15}>
                     <Stack>
                         <Text style={styles.recentEntSubHead}>Today</Text>
-                        <HStack style={styles.recentEntEntry}>
-                            <Text style={styles.recentEntEntryDate}>
-                                Mon, 8:25 am
-                            </Text>
-                            <Text style={styles.recentEntEntryValue}>
-                                5.0{' '}
-                                <Text style={styles.recentEntEntryValueType}>
-                                    mg/dl
-                                </Text>
-                            </Text>
-                        </HStack>
+                        {pressureVitals.todayEntries.length > 0 && (
+                            <Stack>
+                                {pressureVitals.todayEntries.map((data) => {
+                                    let day = moment(data.createdDate).format(
+                                        'ddd, h:m a'
+                                    )
+                                    return (
+                                        <HStack
+                                            key={data._id}
+                                            style={styles.recentEntEntry}>
+                                            <Text
+                                                style={
+                                                    styles.recentEntEntryDate
+                                                }>
+                                                {day}
+                                            </Text>
+                                            <Text
+                                                style={
+                                                    styles.recentEntEntryValue
+                                                }>
+                                                {data.healthVital}
+                                                <Text
+                                                    style={
+                                                        styles.recentEntEntryValueType
+                                                    }>
+                                                    mg/dl
+                                                </Text>
+                                            </Text>
+                                        </HStack>
+                                    )
+                                })}
+                            </Stack>
+                        )}
                     </Stack>
 
                     {/**  week entries */}
-                    <Stack>
+                    <Stack pb={60}>
                         <Text style={styles.recentEntSubHead}>This Week</Text>
-                        <HStack style={styles.recentEntEntry}>
-                            <Text style={styles.recentEntEntryDate}>
-                                Mon, 8:25 am
-                            </Text>
-                            <Text style={styles.recentEntEntryValue}>
-                                5.0{' '}
-                                <Text style={styles.recentEntEntryValueType}>
-                                    mg/dl
-                                </Text>
-                            </Text>
-                        </HStack>
+                        {pressureVitals.weekEntries.length > 0 && (
+                            <Stack>
+                                {pressureVitals.weekEntries.map((data) => {
+                                    let day = moment(data.createdDate).format(
+                                        'ddd, h:m a'
+                                    )
+                                    return (
+                                        <HStack
+                                            key={data._id}
+                                            style={styles.recentEntEntry}>
+                                            <Text
+                                                style={
+                                                    styles.recentEntEntryDate
+                                                }>
+                                                {day}
+                                            </Text>
+                                            <Text
+                                                style={
+                                                    styles.recentEntEntryValue
+                                                }>
+                                                {data.healthVital}
+                                                <Text
+                                                    style={
+                                                        styles.recentEntEntryValueType
+                                                    }>
+                                                    mg/dl
+                                                </Text>
+                                            </Text>
+                                        </HStack>
+                                    )
+                                })}
+                            </Stack>
+                        )}
                     </Stack>
                 </Stack>
             </Stack>

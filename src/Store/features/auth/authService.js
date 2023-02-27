@@ -2,6 +2,7 @@ import axios from 'axios'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { BASE_API_ } from '../../../Middleware/base_url.config'
 import { useNavigation } from '@react-navigation/native'
+import { NativeModules } from 'react-native'
 let errorFunction = (error) => {
     let errorArray = []
     errorArray.push(error)
@@ -53,7 +54,14 @@ const logout = async () => {
     await AsyncStorage.removeItem('@storage_vitalId')
     await AsyncStorage.removeItem('@storage_Key')
     await AsyncStorage.removeItem('@verify_number')
-    
+    // NativeModules.DevSettings.reload()
+
+    let dataCollected = {
+        type: 'success',
+        message: 'logged Out',
+    }
+
+    return dataCollected
 }
 
 //patient registration
@@ -177,11 +185,10 @@ const UpdateAccount = async (userData) => {
     }
 }
 
-
 //update passkey
 const updatePasskey = async (userDetails) => {
     try {
-      const value = await AsyncStorage.getItem('@storage_Key')
+        const value = await AsyncStorage.getItem('@storage_Key')
 
         const response = await axios.put(
             `${BASE_API_}/appPatient/v1/update/passkey`,

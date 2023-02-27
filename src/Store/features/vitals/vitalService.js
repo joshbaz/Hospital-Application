@@ -161,12 +161,68 @@ const MainRecentVitalReading = async (userData) => {
     }
 }
 
+
+//glucose statistical reading
+const StatisticalVitalGlucoseReading = async (userData) => {
+    try {
+        const value = await AsyncStorage.getItem('@storage_Key')
+
+        const response = await axios.get(
+            `${BASE_API_}/appVital/v1/vital/statistics/glucose`,
+            {
+                headers: {
+                    Authorization: 'Brearer ' + value,
+                },
+            }
+        )
+
+        let dataCollected = {
+            type: 'success',
+            ...response.data,
+        }
+
+        return dataCollected
+    } catch (error) {
+        let errorResult = errorFunction(error)
+        return errorResult
+    }
+}
+
+
+//pressure statistical reading
+const StatisticalVitalPressureReading = async (userData) => {
+    try {
+        const value = await AsyncStorage.getItem('@storage_Key')
+
+        const response = await axios.get(
+            `${BASE_API_}/appVital/v1/vital/statistics/pressure`,
+            {
+                headers: {
+                    Authorization: 'Brearer ' + value,
+                },
+            }
+        )
+
+        let dataCollected = {
+            type: 'success',
+            ...response.data,
+        }
+
+        return dataCollected
+    } catch (error) {
+        let errorResult = errorFunction(error)
+        return errorResult
+    }
+}
+
 const vitalService = {
     UpdateVitalSymptoms,
     CreateVitalFitness,
     CreateVitalBPressure,
     CreateVitalBGlucose,
     MainRecentVitalReading,
+    StatisticalVitalGlucoseReading,
+    StatisticalVitalPressureReading,
 }
 
 export default vitalService

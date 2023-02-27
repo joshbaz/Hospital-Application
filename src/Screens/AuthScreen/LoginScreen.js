@@ -18,6 +18,7 @@ import { Login, reset } from '../../Store/features/auth/authSlice'
 import Toast from 'react-native-root-toast'
 import { Formik } from 'formik'
 import * as yup from 'yup'
+import PhoneInput from 'react-native-phone-number-input'
 const LoginScreen = ({ navigation }) => {
     let dispatch = useDispatch()
     const [valueText, setValueText] = React.useState('passkey')
@@ -73,12 +74,6 @@ const LoginScreen = ({ navigation }) => {
                 helperFunctions.setSubmitting(false)
                 setIsSubmittingp(false)
                 setHelperFunctions(null)
-                if (user.onBoardInfo) {
-                    console.log('test')
-                    navigation.navigate('Home')
-                } else {
-                    navigation.navigate('OnboardingScreen')
-                }
             }
             dispatch(reset())
         }
@@ -118,16 +113,21 @@ const LoginScreen = ({ navigation }) => {
                             <Stack w='100%' spacing={31}>
                                 {/** inputs */}
                                 <Stack w='100%' items='center' spacing={20}>
-                                    <TextInput
-                                        style={styles.inputs}
-                                        placeholderTextColor='rgba(22, 25, 28, 0.2)'
-                                        placeholder='Mobile number'
-                                        value={values.mobileNumber}
-                                        onChangeText={handleChange(
-                                            'phoneNumber'
-                                        )}
-                                        onBlur={handleBlur('phoneNumber')}
-                                    />
+                                    <Stack>
+                                        <PhoneInput
+                                            containerStyle={styles.inputs}
+                                            textContainerStyle={
+                                                styles.inputsPhone
+                                            }
+                                            defaultValue={values.phoneNumber}
+                                            onChangeFormattedText={handleChange(
+                                                'phoneNumber'
+                                            )}
+                                            defaultCode='KE'
+                                            layout='first'
+                                            placeholder='phone number'
+                                        />
+                                    </Stack>
 
                                     <HStack style={styles.passwordContainer}>
                                         <TextInput
@@ -226,16 +226,26 @@ const styles = StyleSheet.create({
     },
     inputs: {
         width: '80%',
-        height: 44,
+        height: 60,
+        backgroundColor: 'rgba(22, 25, 28, 0)',
         borderWidth: 1,
         borderRadius: 10,
-        padding: 10,
+        padding: 0,
+        borderColor: 'rgba(22, 25, 28, 0.2)',
+    },
+    inputsPhone: {
+        width: '80%',
+        backgroundColor: 'transparent',
+        height: 60,
+
+        borderRadius: 10,
+        padding: 0,
         borderColor: 'rgba(22, 25, 28, 0.2)',
     },
 
     passwordContainer: {
         width: '80%',
-        height: 44,
+        height: 50,
         borderWidth: 1,
         borderRadius: 10,
         padding: 10,

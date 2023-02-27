@@ -11,6 +11,24 @@ const initialState = {
         BPressureVital: '0/0',
         BGlucoseVital: '0',
     },
+
+    glucoseVitals: {
+        avgVital: 0,
+        lowestVital: 0,
+        highestVital: 0,
+        todayEntries: [],
+        weekEntries: [],
+        graphEntries: [],
+    },
+    pressureVitals: {
+        avgVital: 0,
+        lowestVital: 0,
+        highestVital: 0,
+        todayEntries: [],
+        weekEntries: [],
+        line1Entries: [],
+        line2Entries: [],
+    },
 }
 
 export const createVitalBGlucose = createAsyncThunk(
@@ -77,6 +95,37 @@ export const MainRecentVitalReading = createAsyncThunk(
         const CreateAttempt = await vitalService.MainRecentVitalReading(
             userDetails
         )
+
+        if (CreateAttempt.type === 'success') {
+            return CreateAttempt
+        } else {
+            return thunkAPI.rejectWithValue(CreateAttempt.message)
+        }
+    }
+)
+
+//statiscal glucose readings
+export const StatisticalVitalGlucoseReading = createAsyncThunk(
+    'vital/find/statistics/glucose',
+    async (userDetails, thunkAPI) => {
+        const CreateAttempt = await vitalService.StatisticalVitalGlucoseReading(
+            userDetails
+        )
+
+        if (CreateAttempt.type === 'success') {
+            return CreateAttempt
+        } else {
+            return thunkAPI.rejectWithValue(CreateAttempt.message)
+        }
+    }
+)
+
+//statistical pressure reading
+export const StatisticalVitalPressureReading = createAsyncThunk(
+    'vital/find/statistics/pressure',
+    async (userDetails, thunkAPI) => {
+        const CreateAttempt =
+            await vitalService.StatisticalVitalPressureReading(userDetails)
 
         if (CreateAttempt.type === 'success') {
             return CreateAttempt
@@ -173,6 +222,48 @@ export const vitalSlice = createSlice({
                 state.isError = true
                 state.message = action.payload
             })
+
+            /**  find glucose statistical vitals */
+            .addCase(StatisticalVitalGlucoseReading.pending, (state) => {
+                state.isLoading = true
+            })
+            .addCase(
+                StatisticalVitalGlucoseReading.fulfilled,
+                (state, action) => {
+                    state.isLoading = false
+                    state.isSuccess = true
+                    state.glucoseVitals = action.payload
+                }
+            )
+            .addCase(
+                StatisticalVitalGlucoseReading.rejected,
+                (state, action) => {
+                    state.isLoading = false
+                    state.isError = true
+                    state.message = action.payload
+                }
+            )
+
+            /**  find pressure statistical vitals */
+            .addCase(StatisticalVitalPressureReading.pending, (state) => {
+                state.isLoading = true
+            })
+            .addCase(
+                StatisticalVitalPressureReading.fulfilled,
+                (state, action) => {
+                    state.isLoading = false
+                    state.isSuccess = true
+                    state.pressureVitals = action.payload
+                }
+            )
+            .addCase(
+                StatisticalVitalPressureReading.rejected,
+                (state, action) => {
+                    state.isLoading = false
+                    state.isError = true
+                    state.message = action.payload
+                }
+            )
     },
 })
 

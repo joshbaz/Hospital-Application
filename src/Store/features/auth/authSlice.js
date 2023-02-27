@@ -7,6 +7,7 @@ const initialState = {
     isSuccess: false,
     isLoading: false,
     message: '',
+    isLoggedIn: false,
     user: {
         id: '',
         phoneNumber: '',
@@ -39,7 +40,13 @@ export const Login = createAsyncThunk(
 )
 
 export const Logout = createAsyncThunk('auth/logout', async () => {
-    authService.logout()
+    const LogoutAttempt = await authService.logout()
+
+     if (LogoutAttempt.type === 'success') {
+         return LogoutAttempt
+     } else {
+         return thunkAPI.rejectWithValue(LogoutAttempt.message)
+     }
 })
 
 export const RegisterAppPatient = createAsyncThunk(
@@ -152,16 +159,19 @@ export const authSlice = createSlice({
                 state.isLoading = false
                 state.isSuccess = true
                 state.user = action.payload
+                state.isLoggedIn = true
             })
             .addCase(Login.rejected, (state, action) => {
                 state.isLoading = false
                 state.isError = true
                 state.message = action.payload
+                state.isLoggedIn = false
             })
             .addCase(Logout.fulfilled, (state) => {
                 state.user = null
                 state.isSuccess = true
                 state.message = 'logout success'
+                state.isLoggedIn = false
             })
 
             /** register patient */

@@ -42,6 +42,7 @@ import { Ionicons } from '@expo/vector-icons'
 import * as Notifications from 'expo-notifications'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import Constants from 'expo-constants'
+import { NativeModules } from 'react-native'
 Notifications.setNotificationHandler({
     handleNotification: async () => ({
         shouldShowAlert: true,
@@ -155,7 +156,7 @@ const AccountScreen = ({ navigation }) => {
                 trigger: { hour: 21, minute: 0, repeats: true },
             })
         } else {
-           Notifications.cancelAllScheduledNotificationsAsync()
+            Notifications.cancelAllScheduledNotificationsAsync()
         }
     }
     const [isSubmittingp, setIsSubmittingp] = React.useState(false)
@@ -221,7 +222,8 @@ const AccountScreen = ({ navigation }) => {
             }, 8000)
 
             if (message === 'logout success') {
-                navigation.navigate('Login')
+                // navigation.navigate('Login')
+              //  NativeModules.DevSettings.reload()
             } else {
             }
 

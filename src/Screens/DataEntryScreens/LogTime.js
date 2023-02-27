@@ -58,7 +58,9 @@ const LogTime = ({ route, navigation }) => {
     React.useEffect(() => {
         if (vital === 'Blood Glucose') {
             setPathScreen(() => 'EntryBGlucose')
-        } else {
+        } else if (vital === 'Blood Pressure') {
+            setPathScreen(() => 'EntryBPressure')
+        } else if (vital === 'Fitness Activities') {
             setPathScreen(() => 'EntryFitness')
         }
     }, [vital])
