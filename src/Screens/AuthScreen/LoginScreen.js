@@ -185,6 +185,19 @@ const LoginScreen = ({ navigation }) => {
                                     )}
 
                                     <Text style={styles.accText}>
+                                        Forgot password? -{' '}
+                                        <Text
+                                            onPress={() =>
+                                                navigation.navigate(
+                                                    'ForgotScreen'
+                                                )
+                                            }
+                                            style={styles.signUpText}>
+                                            Reset
+                                        </Text>
+                                    </Text>
+
+                                    <Text style={styles.accText}>
                                         Don't have an account? -{' '}
                                         <Text
                                             onPress={() =>

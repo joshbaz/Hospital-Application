@@ -42,12 +42,53 @@ export const Login = createAsyncThunk(
 export const Logout = createAsyncThunk('auth/logout', async () => {
     const LogoutAttempt = await authService.logout()
 
-     if (LogoutAttempt.type === 'success') {
-         return LogoutAttempt
-     } else {
-         return thunkAPI.rejectWithValue(LogoutAttempt.message)
-     }
+    if (LogoutAttempt.type === 'success') {
+        return LogoutAttempt
+    } else {
+        return thunkAPI.rejectWithValue(LogoutAttempt.message)
+    }
 })
+
+export const ForgotPasskey = createAsyncThunk(
+    'auth/forgotpassword',
+    async (userDetails, thunkAPI) => {
+        const registerAttempt = await authService.ForgotPasskey(userDetails)
+
+        if (registerAttempt.type === 'success') {
+            return registerAttempt.message
+        } else {
+            return thunkAPI.rejectWithValue(registerAttempt.message)
+        }
+    }
+)
+
+//reset Verify
+export const ResetVerifys = createAsyncThunk(
+    'auth/reset/verify',
+    async (userDetails, thunkAPI) => {
+        const registerAttempt = await authService.ResetVerify(userDetails)
+
+        if (registerAttempt.type === 'success') {
+            return registerAttempt.message
+        } else {
+            return thunkAPI.rejectWithValue(registerAttempt.message)
+        }
+    }
+)
+
+//reset Passkey
+export const ResetPasskeys = createAsyncThunk(
+    'auth/reset/passkey',
+    async (userDetails, thunkAPI) => {
+        const registerAttempt = await authService.ResetPasskey(userDetails)
+
+        if (registerAttempt.type === 'success') {
+            return registerAttempt.message
+        } else {
+            return thunkAPI.rejectWithValue(registerAttempt.message)
+        }
+    }
+)
 
 export const RegisterAppPatient = createAsyncThunk(
     'auth/register',
@@ -174,6 +215,51 @@ export const authSlice = createSlice({
                 state.isLoggedIn = false
             })
 
+            /** forgot passkey */
+            .addCase(ForgotPasskey.pending, (state) => {
+                state.isLoading = true
+            })
+            .addCase(ForgotPasskey.fulfilled, (state, action) => {
+                state.isLoading = false
+                state.isSuccess = true
+                state.message = action.payload
+            })
+            .addCase(ForgotPasskey.rejected, (state, action) => {
+                state.isLoading = false
+                state.isError = true
+                state.message = action.payload
+            })
+
+            /** verify reset */
+            .addCase(ResetVerifys.pending, (state) => {
+                state.isLoading = true
+            })
+            .addCase(ResetVerifys.fulfilled, (state, action) => {
+                state.isLoading = false
+                state.isSuccess = true
+                state.message = action.payload
+            })
+            .addCase(ResetVerifys.rejected, (state, action) => {
+                state.isLoading = false
+                state.isError = true
+                state.message = action.payload
+            })
+
+            /** passWord reset */
+            .addCase(ResetPasskeys.pending, (state) => {
+                state.isLoading = true
+            })
+            .addCase(ResetPasskeys.fulfilled, (state, action) => {
+                state.isLoading = false
+                state.isSuccess = true
+                state.message = action.payload
+            })
+            .addCase(ResetPasskeys.rejected, (state, action) => {
+                state.isLoading = false
+                state.isError = true
+                state.message = action.payload
+            })
+
             /** register patient */
             .addCase(RegisterAppPatient.pending, (state) => {
                 state.isLoading = true
@@ -212,7 +298,7 @@ export const authSlice = createSlice({
                 state.isLoading = false
                 state.isSuccess = true
                 state.message = action.payload
-                 state.isLoggedIn = true
+                state.isLoggedIn = true
             })
             .addCase(RegisterOnboardInfo.rejected, (state, action) => {
                 state.isLoading = false

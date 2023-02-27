@@ -9,46 +9,145 @@ import {
     Keyboard,
     View,
     TouchableOpacity,
+    ActivityIndicator,
 } from 'react-native'
 import React from 'react'
 import { Text, Stack, Box, HStack } from '@react-native-material/core'
+import { useDispatch, useSelector } from 'react-redux'
+import { ResetVerifys, reset } from '../../Store/features/auth/authSlice'
+import Toast from 'react-native-root-toast'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
-const ResetVerify = () => {
-     const otp0 = React.useRef(null)
-     const otp1 = React.useRef(null)
-     const otp2 = React.useRef(null)
-     const otp3 = React.useRef(null)
-     const [otpnum, setOtpNum] = React.useState(['', '', '', ''])
+const ResetVerify = ({ navigation }) => {
+    let dispatch = useDispatch()
+    const otp0 = React.useRef(null)
+    const otp1 = React.useRef(null)
+    const otp2 = React.useRef(null)
+    const otp3 = React.useRef(null)
+    const [otpnum, setOtpNum] = React.useState(['', '', '', ''])
+    const [phoneToVerify, setPhoneToVerify] = React.useState('')
+    const [isSubmittingp, setIsSubmittingp] = React.useState(false)
+    const { isError, isSuccess, message } = useSelector((state) => state.auth)
+    React.useEffect(() => {
+        const getData = async () => {
+            try {
+                const value = await AsyncStorage.getItem('@reset_number')
+                if (value !== null) {
+                    // value previously stored
+                    setPhoneToVerify(() => value)
+                }
+            } catch (e) {
+                // error reading value
+            }
+        }
 
-     React.useEffect(() => {
-         otp0.current.focus()
-     }, [])
+        getData()
+    }, [])
 
-     const handleInputOtp = (position, value) => {
-         let otpArray = [...otpnum]
-         otpArray[position] = value
-         console.log('value', value)
-         setOtpNum(() => otpArray)
+    React.useEffect(() => {
+        otp0.current.focus()
+    }, [])
 
-         if (position === 0 && otpArray[position] !== '' && value !== '') {
-             otp1.current.focus()
-         } else if (position === 0 && value == '') {
-             otp0.current.focus()
-         }
-         if (position === 1 && otpArray[position] !== '' && value !== '') {
-             otp2.current.focus()
-         } else if (position === 1 && value == '') {
-             otp0.current.focus()
-         }
-         if (position === 2 && otpArray[position] !== '' && value !== '') {
-             otp3.current.focus()
-         } else if (position === 2 && value == '') {
-             otp1.current.focus()
-         }
-         if (position === 3 && value == '') {
-             otp2.current.focus()
-         }
-     }
+    const handleInputOtp = (position, value) => {
+        let otpArray = [...otpnum]
+        otpArray[position] = value
+        console.log('value', value)
+        setOtpNum(() => otpArray)
+
+        if (position === 0 && otpArray[position] !== '' && value !== '') {
+            otp1.current.focus()
+        } else if (position === 0 && value == '') {
+            otp0.current.focus()
+        }
+        if (position === 1 && otpArray[position] !== '' && value !== '') {
+            otp2.current.focus()
+        } else if (position === 1 && value == '') {
+            otp0.current.focus()
+        }
+        if (position === 2 && otpArray[position] !== '' && value !== '') {
+            otp3.current.focus()
+        } else if (position === 2 && value == '') {
+            otp1.current.focus()
+        }
+        if (position === 3 && value == '') {
+            otp2.current.focus()
+        }
+    }
+
+    const handleSubmitOtp = () => {
+        if (
+            otpnum[0] === '' ||
+            otpnum[1] === '' ||
+            otpnum[2] === '' ||
+            otpnum[3] === ''
+        ) {
+            let toast = Toast.show('Missing opt field', {
+                duration: Toast.durations.LONG,
+                position: 80,
+                backgroundColor: 'red',
+            })
+
+            setTimeout(function hideToast() {
+                Toast.hide(toast)
+            }, 8000)
+        } else {
+            let OtpString =
+                `${otpnum[0]}` +
+                `${otpnum[1]}` +
+                `${otpnum[2]}` +
+                `${otpnum[3]}`
+            let OSplatform = Platform.OS === 'ios' ? 'IOS' : 'Android'
+            dispatch(
+                ResetVerifys({
+                    platform: OSplatform,
+                    otpString: OtpString,
+                    phoneNumber: phoneToVerify,
+                })
+            )
+            setIsSubmittingp(() => true)
+        }
+    }
+
+    React.useEffect(() => {
+        if (isError) {
+            let toast = Toast.show(message, {
+                duration: Toast.durations.LONG,
+                position: 80,
+                backgroundColor: 'red',
+            })
+
+            setTimeout(function hideToast() {
+                Toast.hide(toast)
+            }, 8000)
+
+            if (message === 'Account already verified') {
+                setIsSubmittingp(false)
+                dispatch(reset())
+                navigation.navigate('Login')
+            }
+            setIsSubmittingp(false)
+            dispatch(reset())
+        }
+
+        if (isSuccess && message) {
+            let toast = Toast.show(message, {
+                duration: Toast.durations.LONG,
+                position: 80,
+                backgroundColor: 'green',
+            })
+
+            setTimeout(function hideToast() {
+                Toast.hide(toast)
+            }, 8000)
+
+            setIsSubmittingp(false)
+
+            navigation.navigate('ResetScreen')
+
+            dispatch(reset())
+        }
+    }, [isError, isSuccess, message, dispatch])
+
     return (
         <SafeAreaView style={{ flex: 1 }}>
             <KeyboardAvoidingView
@@ -69,7 +168,7 @@ const ResetVerify = () => {
                                 <Text variant='h5' style={styles.subHeader}>
                                     Enter 4-digit Code we have sent to at{' '}
                                     <Text style={styles.subHeaderContact}>
-                                        +254114635982
+                                        {phoneToVerify}
                                     </Text>
                                 </Text>
                             </Box>
@@ -130,9 +229,22 @@ const ResetVerify = () => {
 
                             {/** button & signup */}
                             <Stack w='100%' items='center' spacing={20}>
-                                <Pressable style={styles.buttonStyles}>
-                                    <Text style={styles.buttonText}>Next</Text>
-                                </Pressable>
+                                {isSubmittingp ? (
+                                    <View style={styles.buttonStyles}>
+                                        <ActivityIndicator
+                                            size='small'
+                                            color='white'
+                                        />
+                                    </View>
+                                ) : (
+                                    <Pressable
+                                        onPress={handleSubmitOtp}
+                                        style={styles.buttonStyles}>
+                                        <Text style={styles.buttonText}>
+                                            Next
+                                        </Text>
+                                    </Pressable>
+                                )}
                             </Stack>
                         </Stack>
                     </Stack>
@@ -229,4 +341,3 @@ const styles = StyleSheet.create({
         color: '#3E66FB',
     },
 })
-

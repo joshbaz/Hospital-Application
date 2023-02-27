@@ -197,6 +197,19 @@ const RegisterScreen = ({ navigation }) => {
                                                 </Text>
                                             </Pressable>
                                         )}
+
+                                        <Text style={styles.accText}>
+                                            Already have an account? -{' '}
+                                            <Text
+                                                onPress={() =>
+                                                    navigation.navigate(
+                                                        'Login'
+                                                    )
+                                                }
+                                                style={styles.signUpText}>
+                                                Sign In
+                                            </Text>
+                                        </Text>
                                     </Stack>
                                 </Stack>
                             )}

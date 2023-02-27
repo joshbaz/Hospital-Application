@@ -64,6 +64,69 @@ const logout = async () => {
     return dataCollected
 }
 
+//patient resets password
+const ForgotPasskey = async (userData) => {
+    try {
+        const response = await axios.post(
+            `${BASE_API_}/appPatient/v1/forgotpassword`,
+            userData
+        )
+
+        let dataCollected = { ...response.data, type: 'success' }
+        await AsyncStorage.setItem('@reset_number', dataCollected.phoneNumber)
+
+        return dataCollected
+    } catch (error) {
+        let errorResult = errorFunction(error)
+        return errorResult
+    }
+}
+
+//registrationVerify
+const ResetVerify = async (userData) => {
+    try {
+        const response = await axios.post(
+            `${BASE_API_}/appPatient/v1/reset/verify`,
+            userData
+        )
+
+        let dataCollected = {
+            ...response.data,
+            type: 'success',
+            message: 'verification successful',
+        }
+        await AsyncStorage.setItem('@reset_number', dataCollected.phoneNumber)
+        await AsyncStorage.setItem('@storage_pat', dataCollected.patId)
+
+        return dataCollected
+    } catch (error) {
+        let errorResult = errorFunction(error)
+        return errorResult
+    }
+}
+
+//reset passkey
+const ResetPasskey = async (userData) => {
+    try {
+        const response = await axios.post(
+            `${BASE_API_}/appPatient/v1/reset/passkey`,
+            userData
+        )
+
+        let dataCollected = {
+            type: 'success',
+            message: response.data,
+        }
+        await AsyncStorage.removeItem('@reset_number')
+        await AsyncStorage.removeItem('@storage_pat')
+
+        return dataCollected
+    } catch (error) {
+        let errorResult = errorFunction(error)
+        return errorResult
+    }
+}
+
 //patient registration
 const PatientRegistration = async (userData) => {
     try {
@@ -220,6 +283,9 @@ const authService = {
     UpdateAccount,
     logout,
     updatePasskey,
+    ForgotPasskey,
+    ResetVerify,
+    ResetPasskey,
 }
 
 export default authService

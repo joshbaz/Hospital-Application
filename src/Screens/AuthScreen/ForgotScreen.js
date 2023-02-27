@@ -7,12 +7,70 @@ import {
     Platform,
     TouchableWithoutFeedback,
     Keyboard,
+    View,
+    ActivityIndicator,
 } from 'react-native'
 import React from 'react'
 import { Text, Stack, Box, HStack } from '@react-native-material/core'
 import PhoneInput from 'react-native-phone-number-input'
+import { ForgotPasskey, reset } from '../../Store/features/auth/authSlice'
+import { useDispatch, useSelector } from 'react-redux'
+import Toast from 'react-native-root-toast'
+import { Formik } from 'formik'
+import * as yup from 'yup'
 
-const ForgotScreen = () => {
+const ForgotScreen = ({ navigation }) => {
+    let dispatch = useDispatch()
+    const [helperFunctions, setHelperFunctions] = React.useState(null)
+    const [isSubmittingp, setIsSubmittingp] = React.useState(false)
+
+    //validation schema
+    const validationSchema = yup.object().shape({
+        phoneNumber: yup.string().required('required'),
+    })
+
+    const { isError, isSuccess, message } = useSelector((state) => state.auth)
+
+    React.useEffect(() => {
+        if (isError) {
+            if (helperFunctions !== null) {
+                helperFunctions.setSubmitting(false)
+
+                setIsSubmittingp(false)
+            }
+            let toast = Toast.show(message, {
+                duration: Toast.durations.LONG,
+                position: 80,
+                backgroundColor: 'red',
+            })
+
+            setTimeout(function hideToast() {
+                Toast.hide(toast)
+            }, 8000)
+
+            dispatch(reset())
+        }
+
+        if (isSuccess && message) {
+            if (helperFunctions !== null) {
+                let toast = Toast.show(message, {
+                    duration: Toast.durations.LONG,
+                    position: 80,
+                })
+
+                setTimeout(function hideToast() {
+                    Toast.hide(toast)
+                }, 8000)
+                helperFunctions.resetForm()
+                helperFunctions.setSubmitting(false)
+                setIsSubmittingp(false)
+                setHelperFunctions(null)
+
+                navigation.navigate('ResetVerify')
+            }
+            dispatch(reset())
+        }
+    }, [isError, isSuccess, message, dispatch])
     return (
         <SafeAreaView style={{ flex: 1 }}>
             <KeyboardAvoidingView
@@ -38,28 +96,63 @@ const ForgotScreen = () => {
                             </Box>
                         </Stack>
 
-                        <Stack w='100%' spacing={100}>
-                            {/** inputs */}
-                            <Stack w='100%' items='center' spacing={20}>
-                                <PhoneInput
-                                    containerStyle={styles.inputs}
-                                    textContainerStyle={styles.inputsPhone}
-                                    defaultValue={''}
-                                    defaultCode='KE'
-                                    layout='first'
-                                    placeholder='Mobile number'
-                                />
-                            </Stack>
+                        <Formik
+                            initialValues={{
+                                phoneNumber: '',
+                            }}
+                            validationSchema={validationSchema}
+                            onSubmit={(values, helpers) => {
+                                setHelperFunctions(helpers)
 
-                            {/** button & signup */}
-                            <Stack w='100%' items='center' spacing={20}>
-                                <Pressable style={styles.buttonStyles}>
-                                    <Text style={styles.buttonText}>
-                                        Send Code
-                                    </Text>
-                                </Pressable>
-                            </Stack>
-                        </Stack>
+                                dispatch(ForgotPasskey(values))
+                                setIsSubmittingp(() => true)
+                            }}>
+                            {({
+                                values,
+                                handleChange,
+                                handleBlur,
+                                handleSubmit,
+                            }) => (
+                                <Stack w='100%' spacing={100}>
+                                    {/** inputs */}
+                                    <Stack w='100%' items='center' spacing={20}>
+                                        <PhoneInput
+                                            containerStyle={styles.inputs}
+                                            textContainerStyle={
+                                                styles.inputsPhone
+                                            }
+                                            defaultValue={values.phoneNumber}
+                                            onChangeFormattedText={handleChange(
+                                                'phoneNumber'
+                                            )}
+                                            defaultCode='KE'
+                                            layout='first'
+                                            placeholder='Mobile number'
+                                        />
+                                    </Stack>
+
+                                    {/** button & signup */}
+                                    <Stack w='100%' items='center' spacing={20}>
+                                        {isSubmittingp ? (
+                                            <View style={styles.buttonStyles}>
+                                                <ActivityIndicator
+                                                    size='small'
+                                                    color='white'
+                                                />
+                                            </View>
+                                        ) : (
+                                            <Pressable
+                                                onPress={handleSubmit}
+                                                style={styles.buttonStyles}>
+                                                <Text style={styles.buttonText}>
+                                                    Send Code
+                                                </Text>
+                                            </Pressable>
+                                        )}
+                                    </Stack>
+                                </Stack>
+                            )}
+                        </Formik>
                     </Stack>
                 </TouchableWithoutFeedback>
             </KeyboardAvoidingView>
@@ -152,4 +245,3 @@ const styles = StyleSheet.create({
         fontFamily: 'Roboto_Bold',
     },
 })
-
