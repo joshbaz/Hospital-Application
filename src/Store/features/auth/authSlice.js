@@ -212,6 +212,7 @@ export const authSlice = createSlice({
                 state.isLoading = false
                 state.isSuccess = true
                 state.message = action.payload
+                 state.isLoggedIn = true
             })
             .addCase(RegisterOnboardInfo.rejected, (state, action) => {
                 state.isLoading = false

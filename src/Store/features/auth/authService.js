@@ -96,6 +96,7 @@ const RegistrationVerify = async (userData) => {
             message: 'verification successful',
         }
         await AsyncStorage.setItem('@storage_Key', dataCollected.token)
+        await AsyncStorage.setItem('@storage_pat', dataCollected.patId)
 
         return dataCollected
     } catch (error) {

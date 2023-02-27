@@ -90,6 +90,12 @@ const MainNavigator = () => {
                             component={ResetScreen}
                             options={{ header: () => null }}
                         />
+
+                        <Stack.Screen
+                            name='OnboardingScreen'
+                            component={OnboardingInfo}
+                            options={{ header: () => null }}
+                        />
                     </>
                 ) : (
                     <>

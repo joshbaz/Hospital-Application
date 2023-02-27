@@ -9,11 +9,12 @@ import {
     Keyboard,
     Image,
     ImageBackground,
+    ActivityIndicator,
 } from 'react-native'
 import React from 'react'
 import { Text, Stack, Box, HStack } from '@react-native-material/core'
 
-const RegisterSuccess = () => {
+const RegisterSuccess = ({ navigation }) => {
     return (
         <SafeAreaView style={{ flex: 1 }}>
             <KeyboardAvoidingView
@@ -54,7 +55,11 @@ const RegisterSuccess = () => {
                         <Stack w='100%' items='center' spacing={50}>
                             {/** button & signup */}
                             <Stack w='100%' items='center' spacing={20}>
-                                <Pressable style={styles.buttonStyles}>
+                                <Pressable
+                                    onPress={() =>
+                                        navigation.navigate('OnboardingScreen')
+                                    }
+                                    style={styles.buttonStyles}>
                                     <Text style={styles.buttonText}>
                                         Continue
                                     </Text>
