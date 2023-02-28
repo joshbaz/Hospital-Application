@@ -35,6 +35,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import Toast from 'react-native-root-toast'
 import {
     updateVitalSymptoms,
+    MainRecentVitalReading,
     reset,
 } from '../../Store/features/vitals/vitalSlice'
 
@@ -76,6 +77,10 @@ const NewEntrySymptoms = ({ route, navigation }) => {
     const [isSubmittingp, setIsSubmittingp] = React.useState(false)
 
     const { isError, isSuccess, message } = useSelector((state) => state.vitals)
+
+     React.useEffect(() => {
+         dispatch(MainRecentVitalReading())
+     }, [dispatch])
     const onChangeEmFeeling = (emValue) => {
          console.log(emValue)
         setEmFeelingActivity(() => emValue)

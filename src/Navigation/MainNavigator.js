@@ -26,6 +26,7 @@ import NewEntrySymptoms from '../Screens/DataEntryScreens/NewEntrySymptoms'
 import LogTimeMain from '../Screens/DataEntryScreens/LogTimeMain'
 import { useDispatch, useSelector } from 'react-redux'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import OnboardingInfo2 from '../Screens/Onboarding/OnboardingInfo2'
 const Stack = createNativeStackNavigator()
 const MainNavigator = () => {
     const [auth, setAuth] = React.useState(false)
@@ -93,24 +94,24 @@ const MainNavigator = () => {
 
                         <Stack.Screen
                             name='OnboardingScreen'
-                            component={OnboardingInfo}
+                            component={OnboardingInfo2}
                             options={{ header: () => null }}
                         />
                     </>
                 ) : (
                     <>
-                        {/** onboarding screen */}
-                        <Stack.Screen
-                            name='OnboardingScreen'
-                            component={OnboardingInfo}
-                            options={{ header: () => null }}
-                        />
-
                         {/** Main screen */}
 
                         <Stack.Screen
                             name='Home'
                             component={MainScreen}
+                            options={{ header: () => null }}
+                        />
+
+                        {/** onboarding screen */}
+                        <Stack.Screen
+                            name='OnboardingScreen'
+                            component={OnboardingInfo}
                             options={{ header: () => null }}
                         />
 

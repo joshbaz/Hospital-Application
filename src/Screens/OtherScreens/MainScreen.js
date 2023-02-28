@@ -32,20 +32,24 @@ import {
 
 const MainScreen = ({ navigation }) => {
     let dispatch = useDispatch()
+    const [BPressureVital, setBPressureVital] = React.useState('0/0')
+    const [BGlucoseVital, setBGlucoseVital] = React.useState('0')
     const [pName, setPName] = React.useState('')
     const day = Moments().tz('Africa/Nairobi').format('Do')
     const Month = Moments().tz('Africa/Nairobi').format('MMMM')
-
-    React.useEffect(() => {
-        dispatch(MainRecentVitalReading())
-    }, [])
-
     const { isError, isSuccess, message, mainrecents } = useSelector(
         (state) => state.vitals
     )
+    React.useEffect(() => {
+        dispatch(MainRecentVitalReading())
+    }, [dispatch])
 
     const { user, isLoggedIn } = useSelector((state) => state.auth)
 
+    React.useEffect(() => {
+        setBGlucoseVital(() => mainrecents.BGlucoseVital)
+        setBPressureVital(() => mainrecents.BPressureVital)
+    }, [message, mainrecents])
     React.useEffect(() => {
         if (isLoggedIn) {
             if (user.onBoardInfo) {
@@ -159,7 +163,7 @@ const MainScreen = ({ navigation }) => {
 
                                 <Stack alignItems='flex-start' spacing={2}>
                                     <Text style={styles.statsNum}>
-                                        {mainrecents.BGlucoseVital}
+                                        {BGlucoseVital}
                                     </Text>{' '}
                                     <Text style={styles.statsDesc}>mg/dl</Text>
                                 </Stack>
@@ -182,7 +186,7 @@ const MainScreen = ({ navigation }) => {
 
                                 <Stack alignItems='flex-start' spacing={2}>
                                     <Text style={styles.statsNum}>
-                                        {mainrecents.BPressureVital}
+                                        {BPressureVital}
                                     </Text>{' '}
                                     <Text style={styles.statsDesc}>mm/gh</Text>
                                 </Stack>

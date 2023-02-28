@@ -41,7 +41,7 @@ import moment from 'moment-timezone'
 
 const windowWidth = Dimensions.get('window').width
 
-const HealthVitals = ({navigation}) => {
+const HealthVitals = ({ navigation }) => {
     let dispatch = useDispatch()
     const [activeTab, setActiveTab] = React.useState('glucose')
 
@@ -318,7 +318,9 @@ const HealthVitals = ({navigation}) => {
                                                 {glucoseVitals.todayEntries.map(
                                                     (data) => {
                                                         let day = moment(
-                                                            data.createdDate
+                                                            new Date(
+                                                                data.createdDate
+                                                            )
                                                         ).format('ddd, h:m a')
                                                         return (
                                                             <HStack
@@ -365,7 +367,9 @@ const HealthVitals = ({navigation}) => {
                                                 {glucoseVitals.weekEntries.map(
                                                     (data) => {
                                                         let day = moment(
-                                                            data.createdDate
+                                                          new Date(
+                                                                data.createdDate
+                                                            )
                                                         ).format('ddd, h:m a')
                                                         return (
                                                             <HStack
