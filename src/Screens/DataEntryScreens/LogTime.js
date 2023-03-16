@@ -53,7 +53,7 @@ const linkData = [
 const LogTime = ({ route, navigation }) => {
     const [pathScreen, setPathScreen] = React.useState('')
     const { vital } = route.params
-    console.log('routes', vital)
+   
 
     React.useEffect(() => {
         if (vital === 'Blood Glucose') {
@@ -70,54 +70,64 @@ const LogTime = ({ route, navigation }) => {
 
             {/** Title */}
             <HStack
-                h={Platform.OS === 'ios' ? '10%' : '15%'}
+                h={Platform.OS === 'ios' ? '10%' : '10%'}
                 style={styles.titleContainer}>
                 <Text style={styles.textTitle}>Log Time ({vital})</Text>
             </HStack>
 
             {/** rest of the content */}
-            <Stack
-                spacing={12}
-                h={Platform.OS === 'ios' ? '90%' : '100%'}
-                style={{
-                    paddingBottom: Platform.OS === 'ios' ? '0%' : '40%',
+            <ScrollView
+                contentContainerStyle={{
+                    flexGrow: 1,
+                    justifyContent: 'flex-start',
+                    width: '100%',
+                    height: Platform.OS === 'ios' ? '90%' : '90%',
+                    marginTop: 0,
+                    paddingBottom: 0,
                     backgroundColor: '#f9fafa',
-                    paddingLeft: 15,
-                    paddingRight: 15,
-                    paddingTop: 20,
                 }}>
-                {/** lists */}
-                {linkData.map((data, index) => {
-                    return (
-                        <HStack style={styles.cardContainer} key={index}>
-                            <Stack>
-                                <Text style={styles.cardSubHead}>
-                                    {data.subHead}
-                                </Text>
-                                <Text style={styles.cardHead}>
-                                    {data.title}
-                                </Text>
-                            </Stack>
-
-                            <TouchableOpacity
-                                onPress={() =>
-                                    navigation.navigate(pathScreen, {
-                                        vital,
-                                        vitalTimelineType: data.keylink,
-                                    })
-                                }>
-                                <Stack style={styles.arrowRight}>
-                                    <MaterialIcons
-                                        name='keyboard-arrow-right'
-                                        size={40}
-                                        color='#3E66FB'
-                                    />
+                <Stack
+                    spacing={12}
+                    style={{
+                        paddingBottom: Platform.OS === 'ios' ? '0%' : '40%',
+                        backgroundColor: '#f9fafa',
+                        paddingLeft: 15,
+                        paddingRight: 15,
+                        paddingTop: 20,
+                    }}>
+                    {/** lists */}
+                    {linkData.map((data, index) => {
+                        return (
+                            <HStack style={styles.cardContainer} key={index}>
+                                <Stack>
+                                    <Text style={styles.cardSubHead}>
+                                        {data.subHead}
+                                    </Text>
+                                    <Text style={styles.cardHead}>
+                                        {data.title}
+                                    </Text>
                                 </Stack>
-                            </TouchableOpacity>
-                        </HStack>
-                    )
-                })}
-            </Stack>
+
+                                <TouchableOpacity
+                                    onPress={() =>
+                                        navigation.navigate(pathScreen, {
+                                            vital,
+                                            vitalTimelineType: data.keylink,
+                                        })
+                                    }>
+                                    <Stack style={styles.arrowRight}>
+                                        <MaterialIcons
+                                            name='keyboard-arrow-right'
+                                            size={40}
+                                            color='#3E66FB'
+                                        />
+                                    </Stack>
+                                </TouchableOpacity>
+                            </HStack>
+                        )
+                    })}
+                </Stack>
+            </ScrollView>
         </Stack>
     )
 }

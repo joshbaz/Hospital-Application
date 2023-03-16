@@ -82,12 +82,12 @@ const NewEntrySymptoms = ({ route, navigation }) => {
          dispatch(MainRecentVitalReading())
      }, [dispatch])
     const onChangeEmFeeling = (emValue) => {
-         console.log(emValue)
+        
         setEmFeelingActivity(() => emValue)
     }
     const onChangeActivity = (activityValue) => {
         let newChosen = [...chosenActivity]
-        console.log(newChosen)
+       
         if (newChosen.length > 0) {
             let findSelected = newChosen.some(
                 (element) => element.title === activityValue

@@ -28,7 +28,6 @@ const Login = async (userData) => {
             userData
         )
 
-        console.log('running find')
         let dataCollected = {
             ...response.data,
             type: 'success',
@@ -54,13 +53,13 @@ const logout = async () => {
     await AsyncStorage.removeItem('@storage_vitalId')
     await AsyncStorage.removeItem('@storage_Key')
     await AsyncStorage.removeItem('@verify_number')
-    // NativeModules.DevSettings.reload()
 
     let dataCollected = {
         type: 'success',
         message: 'logged Out',
     }
 
+    NativeModules.DevSettings.reload()
     return dataCollected
 }
 

@@ -111,7 +111,7 @@ const RegisterScreen = ({ navigation }) => {
                             validationSchema={validationSchema}
                             onSubmit={(values, helpers) => {
                                 setHelperFunctions(helpers)
-                                console.log('values', values)
+                                
                                 dispatch(RegisterAppPatient(values))
                                 setIsSubmittingp(() => true)
                             }}>

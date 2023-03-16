@@ -274,7 +274,7 @@ const BPressureTab = () => {
                                 {pressureVitals.todayEntries.map((data) => {
                                     let day = moment(
                                         new Date(data.createdDate)
-                                    ).format('ddd, h:m a')
+                                    ).format('ddd, h:mm a')
                                     return (
                                         <HStack
                                             key={data._id}
@@ -312,7 +312,7 @@ const BPressureTab = () => {
                                 {pressureVitals.weekEntries.map((data) => {
                                     let day = moment(
                                         new Date(data.createdDate)
-                                    ).format('ddd, h:m a')
+                                    ).format('ddd, h:mm a')
                                     return (
                                         <HStack
                                             key={data._id}

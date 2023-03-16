@@ -80,7 +80,6 @@ const NewEntryBPressure = ({ route, navigation }) => {
             ' ' +
             `${tempDate.getHours() >= 12 ? 'PM' : 'AM'}`
 
-        console.log('fDate', fDate, 'ftime', fTime)
         if (Platform.OS === 'ios') {
             setShowDates(() => fDate)
 
@@ -88,24 +87,25 @@ const NewEntryBPressure = ({ route, navigation }) => {
             //     setShowTime(() => fTime)
             // }
         } else {
-            setShowDates(() => fDate)
             if (mode === 'time') {
                 setShowTime(() => fTime)
+                setActivateDate(() => false)
             } else {
+                setShowDates(() => fDate)
+                setActivateDate(() => false)
             }
-            setActivateDate(() => false)
         }
     }
 
     const showMode = (currentMode) => {
-        setMode(currentMode)
+        setMode(() => currentMode)
         setActivateDate(() => true)
     }
 
     const iosAcceptBtn = () => {
         let tempDate = new Date(date)
         let momentDate = moment(date)
-        console.log('moments', momentDate)
+
         let fDate =
             tempDate.getDate() +
             ' ' +
@@ -118,12 +118,14 @@ const NewEntryBPressure = ({ route, navigation }) => {
             `${tempDate.getMinutes()}` +
             ' ' +
             `${tempDate.getHours() >= 12 ? 'PM' : 'AM'}`
-        setShowDates(() => fDate)
+
         if (mode === 'time') {
             setShowTime(() => fTime)
+            setActivateDate(() => false)
         } else {
+            setShowDates(() => fDate)
+            setActivateDate(() => false)
         }
-        setActivateDate(() => false)
     }
 
     const iosCancelBtn = () => {

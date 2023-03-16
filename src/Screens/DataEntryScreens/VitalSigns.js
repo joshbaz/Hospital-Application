@@ -37,7 +37,7 @@ const VitalSigns = ({ route, navigation }) => {
 
             {/** Title */}
             <HStack
-                h={Platform.OS === 'ios' ? '10%' : '15%'}
+                h={Platform.OS === 'ios' ? '10%' : '10%'}
                 style={styles.titleContainer}>
                 <Text style={styles.textTitle}>Vital Signs</Text>
                 <Text>({vitalTimelineType})</Text>

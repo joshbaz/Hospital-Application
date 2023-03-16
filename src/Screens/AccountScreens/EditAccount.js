@@ -81,7 +81,7 @@ const EditAccount = ({ navigation }) => {
             '/' +
             tempDate.getFullYear()
 
-        console.log('fDate', fDate)
+        
         if (Platform.OS === 'ios') {
             setShowDates(() => fDate)
         } else {

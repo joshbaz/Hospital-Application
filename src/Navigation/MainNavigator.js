@@ -41,6 +41,7 @@ const MainNavigator = () => {
                 if (value) {
                     setAuth(() => true)
                 } else {
+                   
                     setAuth(() => false)
                 }
             } catch (error) {}

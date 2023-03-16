@@ -9,8 +9,11 @@ import {
     Keyboard,
     ActivityIndicator,
     View,
+    ScrollView,
 } from 'react-native'
 import React from 'react'
+import { SafeAreaView } from 'react-native-safe-area-context'
+import { StatusBar } from 'expo-status-bar'
 import { Text, Stack, Box, HStack } from '@react-native-material/core'
 import { Ionicons } from '@expo/vector-icons'
 import { useDispatch, useSelector } from 'react-redux'
@@ -79,141 +82,181 @@ const LoginScreen = ({ navigation }) => {
         }
     }, [isError, isSuccess, message, dispatch])
     return (
-        <KeyboardAvoidingView
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            style={{ flex: 1 }}>
-            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-                <Stack style={styles.container} spacing={65}>
-                    <Stack spacing={15} justify='center' items={'center'}>
-                        <Text variant='h1' style={styles.textHeader}>
-                            Welcome Back !
-                        </Text>
-                        <Text variant='h5' style={styles.subHeader}>
-                            Sign in to continue.
-                        </Text>
-                    </Stack>
-
-                    <Formik
-                        initialValues={{
-                            phoneNumber: '',
-                            password: '',
-                        }}
-                        validationSchema={validationSchema}
-                        onSubmit={(values, helpers) => {
-                            setHelperFunctions(helpers)
-                            dispatch(Login(values))
-                            setIsSubmittingp(() => true)
-                        }}>
-                        {({
-                            values,
-                            handleChange,
-                            handleBlur,
-                            handleSubmit,
-                        }) => (
-                            <Stack w='100%' spacing={31}>
-                                {/** inputs */}
-                                <Stack w='100%' items='center' spacing={20}>
-                                    <Stack>
-                                        <PhoneInput
-                                            containerStyle={styles.inputs}
-                                            textContainerStyle={
-                                                styles.inputsPhone
-                                            }
-                                            defaultValue={values.phoneNumber}
-                                            onChangeFormattedText={handleChange(
-                                                'phoneNumber'
-                                            )}
-                                            defaultCode='KE'
-                                            layout='first'
-                                            placeholder='phone number'
-                                        />
-                                    </Stack>
-
-                                    <HStack style={styles.passwordContainer}>
-                                        <TextInput
-                                            style={styles.passwordInput}
-                                            secureTextEntry={textSecure}
-                                            placeholderTextColor='rgba(22, 25, 28, 0.2)'
-                                            placeholder='Password'
-                                            value={values.password}
-                                            onChangeText={handleChange(
-                                                'password'
-                                            )}
-                                            onBlur={handleBlur('password')}
-                                        />
-                                        {textSecure ? (
-                                            <Pressable
-                                                onPress={onChangeSecure}
-                                                style={styles.passwordIcon}>
-                                                <Ionicons
-                                                    name='ios-eye-off-outline'
-                                                    size={25}
-                                                    color='black'
-                                                />
-                                            </Pressable>
-                                        ) : (
-                                            <Pressable
-                                                onPress={onChangeSecure}
-                                                style={styles.passwordIcon}>
-                                                <Ionicons
-                                                    name='eye-outline'
-                                                    size={25}
-                                                    color='black'
-                                                />
-                                            </Pressable>
-                                        )}
-                                    </HStack>
-                                </Stack>
-
-                                {/** button & signup */}
-                                <Stack w='100%' items='center' spacing={20}>
-                                    {isSubmittingp ? (
-                                        <View style={styles.buttonStyles}>
-                                            <ActivityIndicator
-                                                size='small'
-                                                color='white'
-                                            />
-                                        </View>
-                                    ) : (
-                                        <TouchableOpacity
-                                            onPress={handleSubmit}
-                                            style={styles.buttonStyles}>
-                                            <Text style={styles.buttonText}>
-                                                Sign in my Account
-                                            </Text>
-                                        </TouchableOpacity>
-                                    )}
-
-                                    <Text style={styles.accText}>
-                                        Forgot password? -{' '}
-                                        <Text
-                                            onPress={() =>
-                                                navigation.navigate(
-                                                    'ForgotScreen'
-                                                )
-                                            }
-                                            style={styles.signUpText}>
-                                            Reset
-                                        </Text>
-                                    </Text>
-
-                                    <Text style={styles.accText}>
-                                        Don't have an account? -{' '}
-                                        <Text
-                                            onPress={() =>
-                                                navigation.navigate('Register')
-                                            }
-                                            style={styles.signUpText}>
-                                            Sign Up
-                                        </Text>
-                                    </Text>
-                                </Stack>
+        <SafeAreaView style={{ flex: 1 }}>
+            <ScrollView
+                contentContainerStyle={{
+                    flexGrow: 1,
+                    justifyContent: 'center',
+                    width: '100%',
+                    marginTop: 0,
+                    paddingBottom: 20,
+                }}>
+                <StatusBar />
+                <KeyboardAvoidingView
+                    behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                    style={{ flex: 1 }}>
+                    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                        <Stack style={styles.container} spacing={65}>
+                            <Stack
+                                spacing={15}
+                                justify='center'
+                                items={'center'}>
+                                <Text variant='h1' style={styles.textHeader}>
+                                    Welcome Back !
+                                </Text>
+                                <Text variant='h5' style={styles.subHeader}>
+                                    Sign in to continue.
+                                </Text>
                             </Stack>
-                        )}
-                    </Formik>
-                </Stack>
-            </TouchableWithoutFeedback>
-        </KeyboardAvoidingView>
+
+                            <Formik
+                                initialValues={{
+                                    phoneNumber: '',
+                                    password: '',
+                                }}
+                                validationSchema={validationSchema}
+                                onSubmit={(values, helpers) => {
+                                    setHelperFunctions(helpers)
+                                    dispatch(Login(values))
+                                    setIsSubmittingp(() => true)
+                                }}>
+                                {({
+                                    values,
+                                    handleChange,
+                                    handleBlur,
+                                    handleSubmit,
+                                }) => (
+                                    <Stack w='100%' spacing={31}>
+                                        {/** inputs */}
+                                        <Stack
+                                            w='100%'
+                                            items='center'
+                                            spacing={20}>
+                                            <Stack>
+                                                <PhoneInput
+                                                    containerStyle={
+                                                        styles.inputs
+                                                    }
+                                                    textContainerStyle={
+                                                        styles.inputsPhone
+                                                    }
+                                                    defaultValue={
+                                                        values.phoneNumber
+                                                    }
+                                                    onChangeFormattedText={handleChange(
+                                                        'phoneNumber'
+                                                    )}
+                                                    defaultCode='KE'
+                                                    layout='first'
+                                                    placeholder='phone number'
+                                                />
+                                            </Stack>
+
+                                            <HStack
+                                                style={
+                                                    styles.passwordContainer
+                                                }>
+                                                <TextInput
+                                                    style={styles.passwordInput}
+                                                    secureTextEntry={textSecure}
+                                                    placeholderTextColor='rgba(22, 25, 28, 0.2)'
+                                                    placeholder='Password'
+                                                    value={values.password}
+                                                    onChangeText={handleChange(
+                                                        'password'
+                                                    )}
+                                                    onBlur={handleBlur(
+                                                        'password'
+                                                    )}
+                                                />
+                                                {textSecure ? (
+                                                    <Pressable
+                                                        onPress={onChangeSecure}
+                                                        style={
+                                                            styles.passwordIcon
+                                                        }>
+                                                        <Ionicons
+                                                            name='ios-eye-off-outline'
+                                                            size={25}
+                                                            color='black'
+                                                        />
+                                                    </Pressable>
+                                                ) : (
+                                                    <Pressable
+                                                        onPress={onChangeSecure}
+                                                        style={
+                                                            styles.passwordIcon
+                                                        }>
+                                                        <Ionicons
+                                                            name='eye-outline'
+                                                            size={25}
+                                                            color='black'
+                                                        />
+                                                    </Pressable>
+                                                )}
+                                            </HStack>
+                                        </Stack>
+
+                                        {/** button & signup */}
+                                        <Stack
+                                            w='100%'
+                                            items='center'
+                                            spacing={20}>
+                                            {isSubmittingp ? (
+                                                <View
+                                                    style={styles.buttonStyles}>
+                                                    <ActivityIndicator
+                                                        size='small'
+                                                        color='white'
+                                                    />
+                                                </View>
+                                            ) : (
+                                                <TouchableOpacity
+                                                    onPress={handleSubmit}
+                                                    style={styles.buttonStyles}>
+                                                    <Text
+                                                        style={
+                                                            styles.buttonText
+                                                        }>
+                                                        Sign in my Account
+                                                    </Text>
+                                                </TouchableOpacity>
+                                            )}
+
+                                            <Text style={styles.accText}>
+                                                Forgot password? -{' '}
+                                                <Text
+                                                    onPress={() =>
+                                                        navigation.navigate(
+                                                            'ForgotScreen'
+                                                        )
+                                                    }
+                                                    style={styles.signUpText}>
+                                                    Reset
+                                                </Text>
+                                            </Text>
+
+                                            <Text style={styles.accText}>
+                                                Don't have an account? -{' '}
+                                                <Text
+                                                    onPress={() =>
+                                                        navigation.navigate(
+                                                            'Register'
+                                                        )
+                                                    }
+                                                    style={styles.signUpText}>
+                                                    Sign Up
+                                                </Text>
+                                            </Text>
+                                        </Stack>
+                                    </Stack>
+                                )}
+                            </Formik>
+                        </Stack>
+                    </TouchableWithoutFeedback>
+                </KeyboardAvoidingView>
+            </ScrollView>
+        </SafeAreaView>
     )
 }
 

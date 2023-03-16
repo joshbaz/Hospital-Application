@@ -112,7 +112,6 @@ const NewEntryFitness = ({ route, navigation }) => {
             ' ' +
             `${tempDate.getHours() >= 12 ? 'PM' : 'AM'}`
 
-        console.log('fDate', fDate, 'ftime', fTime)
         if (Platform.OS === 'ios') {
             setShowDates(() => fDate)
 
@@ -120,17 +119,18 @@ const NewEntryFitness = ({ route, navigation }) => {
             //     setShowTime(() => fTime)
             // }
         } else {
-            setShowDates(() => fDate)
             if (mode === 'time') {
                 setShowTime(() => fTime)
+                setActivateDate(() => false)
             } else {
+                setShowDates(() => fDate)
+                setActivateDate(() => false)
             }
-            setActivateDate(() => false)
         }
     }
 
     const showMode = (currentMode) => {
-        setMode(currentMode)
+        setMode(() => currentMode)
         setActivateDate(() => true)
     }
 
@@ -148,12 +148,14 @@ const NewEntryFitness = ({ route, navigation }) => {
             `${tempDate.getMinutes()}` +
             ' ' +
             `${tempDate.getHours() >= 12 ? 'PM' : 'AM'}`
-        setShowDates(() => fDate)
+
         if (mode === 'time') {
             setShowTime(() => fTime)
+            setActivateDate(() => false)
         } else {
+            setShowDates(() => fDate)
+            setActivateDate(() => false)
         }
-        setActivateDate(() => false)
     }
 
     const iosCancelBtn = () => {
@@ -232,7 +234,7 @@ const NewEntryFitness = ({ route, navigation }) => {
                 Toast.hide(toast)
             }, 8000)
         } else {
-             let momentDate = moment(date)
+            let momentDate = moment(date)
             let alldetails = {
                 vitalTimelineType,
                 durationValue,

@@ -129,7 +129,7 @@ const ResetScreen = ({ navigation }) => {
                         validationSchema={validationSchema}
                         onSubmit={(values, helpers) => {
                             setHelperFunctions(helpers)
-                            console.log('values', values)
+                            
 
                             let allValues = {
                                 password: values.password,

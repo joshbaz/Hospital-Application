@@ -321,7 +321,7 @@ const HealthVitals = ({ navigation }) => {
                                                             new Date(
                                                                 data.createdDate
                                                             )
-                                                        ).format('ddd, h:m a')
+                                                        ).format('ddd, h:mm a')
                                                         return (
                                                             <HStack
                                                                 key={data._id}
@@ -370,7 +370,7 @@ const HealthVitals = ({ navigation }) => {
                                                           new Date(
                                                                 data.createdDate
                                                             )
-                                                        ).format('ddd, h:m a')
+                                                        ).format('ddd, h:mm a')
                                                         return (
                                                             <HStack
                                                                 key={data._id}

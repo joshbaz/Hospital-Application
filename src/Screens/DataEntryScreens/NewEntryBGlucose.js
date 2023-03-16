@@ -54,7 +54,6 @@ const NewEntryBGlucose = ({ route, navigation }) => {
 
     const { vital, vitalTimelineType } = route.params
 
-    console.log('entry glu', vital, vitalTimelineType)
     const onChange = (event, selectedDate) => {
         const currentDate = selectedDate || date
         // setShowDates(Platform.OS === 'ios')
@@ -70,12 +69,11 @@ const NewEntryBGlucose = ({ route, navigation }) => {
 
         let fTime =
             `${tempDate.getHours()}` +
-            '.' +
+            ':' +
             `${tempDate.getMinutes()}` +
             ' ' +
             `${tempDate.getHours() >= 12 ? 'PM' : 'AM'}`
 
-        console.log('fDate', fDate, 'ftime', fTime)
         if (Platform.OS === 'ios') {
             setShowDates(() => fDate)
 
@@ -83,17 +81,19 @@ const NewEntryBGlucose = ({ route, navigation }) => {
             //     setShowTime(() => fTime)
             // }
         } else {
-            setShowDates(() => fDate)
             if (mode === 'time') {
+               
                 setShowTime(() => fTime)
+                setActivateDate(() => false)
             } else {
+                setShowDates(() => fDate)
+                setActivateDate(() => false)
             }
-            setActivateDate(() => false)
         }
     }
 
     const showMode = (currentMode) => {
-        setMode(currentMode)
+        setMode(() => currentMode)
         setActivateDate(() => true)
     }
 
@@ -111,12 +111,14 @@ const NewEntryBGlucose = ({ route, navigation }) => {
             `${tempDate.getMinutes()}` +
             ' ' +
             `${tempDate.getHours() >= 12 ? 'PM' : 'AM'}`
-        setShowDates(() => fDate)
+
         if (mode === 'time') {
             setShowTime(() => fTime)
+            setActivateDate(() => false)
         } else {
+            setShowDates(() => fDate)
+            setActivateDate(() => false)
         }
-        setActivateDate(() => false)
     }
 
     const iosCancelBtn = () => {
@@ -197,207 +199,231 @@ const NewEntryBGlucose = ({ route, navigation }) => {
 
             {/** Title */}
             <HStack
-                h={Platform.OS === 'ios' ? '10%' : '15%'}
+                h={Platform.OS === 'ios' ? '10%' : 48}
                 style={styles.titleContainer}>
                 <Text style={styles.textTitle}>Blood Glucose</Text>
                 <Text>({vitalTimelineType})</Text>
             </HStack>
 
             {/** rest of the content */}
+
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-                <Stack
-                    spacing={'30%'}
-                    h={Platform.OS === 'ios' ? '90%' : '100%'}
-                    style={{
-                        paddingBottom: Platform.OS === 'ios' ? '0%' : '40%',
-                        backgroundColor: '#f9fafa',
-                        paddingLeft: 15,
-                        paddingRight: 15,
-                        paddingTop: 20,
+                <ScrollView
+                    contentContainerStyle={{
+                        flexGrow: 1,
+                        justifyContent: 'center',
+                        width: '100%',
+                        height: Platform.OS === 'ios' ? '90%' : '100%',
+                        marginTop: 0,
                     }}>
-                    <Stack spacing={12}>
-                        {/** value */}
-                        <HStack style={styles.cardContainer}>
-                            <Stack>
-                                <Text style={styles.cardSubHead}>Value</Text>
-
-                                <HStack
-                                    justifyContent='center'
-                                    alignItems='center'
-                                    spacing={12}>
-                                    {activateEditValue ? (
-                                        <TextInput
-                                            inputMode='decimal'
-                                            keyboardType='decimal-pad'
-                                            style={styles.cardValue}
-                                            placeholder='0'
-                                            value={glucoseValue}
-                                            onChangeText={(value) => {
-                                                setGlucoseValue(value)
-                                            }}
-                                        />
-                                    ) : (
-                                        <Text style={styles.cardValue}>
-                                            {glucoseValue}
-                                        </Text>
-                                    )}
-
-                                    <Text style={styles.cardValueType}>
-                                        mg/dL
-                                    </Text>
-                                </HStack>
-                            </Stack>
-
-                            {activateEditValue ? (
-                                <TouchableOpacity
-                                    style={styles.cardBtn}
-                                    onPress={() => setActivateEditValue(false)}>
-                                    <Text style={styles.cardBtnText}>
-                                        Close
-                                    </Text>
-                                </TouchableOpacity>
-                            ) : (
-                                <TouchableOpacity
-                                    style={styles.cardBtn}
-                                    onPress={() => setActivateEditValue(true)}>
-                                    <Text style={styles.cardBtnText}>Edit</Text>
-                                </TouchableOpacity>
-                            )}
-                        </HStack>
-
-                        {/** date */}
-                        <TouchableOpacity onPress={() => showMode('date')}>
+                    <Stack
+                        spacing={'30%'}
+                        h={Platform.OS === 'ios' ? '100%' : '100%'}
+                        style={{
+                            paddingBottom: Platform.OS === 'ios' ? '0%' : '40%',
+                            backgroundColor: '#f9fafa',
+                            paddingLeft: 15,
+                            paddingRight: 15,
+                            paddingTop: 20,
+                        }}>
+                        <Stack spacing={12}>
+                            {/** value */}
                             <HStack style={styles.cardContainer}>
-                                <HStack spacing={20} alignItems='center'>
-                                    <View style={styles.cardIcon}>
-                                        <MaterialCommunityIcons
-                                            name='calendar-month'
-                                            size={26}
-                                            color='#3e66fb'
-                                        />
-                                    </View>
+                                <Stack>
+                                    <Text style={styles.cardSubHead}>
+                                        Value
+                                    </Text>
+
+                                    <HStack
+                                        justifyContent='center'
+                                        alignItems='center'
+                                        spacing={12}>
+                                        {activateEditValue ? (
+                                            <TextInput
+                                                inputMode='decimal'
+                                                keyboardType='decimal-pad'
+                                                style={styles.cardValue}
+                                                placeholder='0'
+                                                value={glucoseValue}
+                                                onChangeText={(value) => {
+                                                    setGlucoseValue(value)
+                                                }}
+                                            />
+                                        ) : (
+                                            <Text style={styles.cardValue}>
+                                                {glucoseValue}
+                                            </Text>
+                                        )}
+
+                                        <Text style={styles.cardValueType}>
+                                            mg/dL
+                                        </Text>
+                                    </HStack>
+                                </Stack>
+
+                                {activateEditValue ? (
+                                    <TouchableOpacity
+                                        style={styles.cardBtn}
+                                        onPress={() =>
+                                            setActivateEditValue(false)
+                                        }>
+                                        <Text style={styles.cardBtnText}>
+                                            Close
+                                        </Text>
+                                    </TouchableOpacity>
+                                ) : (
+                                    <TouchableOpacity
+                                        style={styles.cardBtn}
+                                        onPress={() =>
+                                            setActivateEditValue(true)
+                                        }>
+                                        <Text style={styles.cardBtnText}>
+                                            Edit
+                                        </Text>
+                                    </TouchableOpacity>
+                                )}
+                            </HStack>
+
+                            {/** date */}
+                            <TouchableOpacity onPress={() => showMode('date')}>
+                                <HStack style={styles.cardContainer}>
+                                    <HStack spacing={20} alignItems='center'>
+                                        <View style={styles.cardIcon}>
+                                            <MaterialCommunityIcons
+                                                name='calendar-month'
+                                                size={26}
+                                                color='#3e66fb'
+                                            />
+                                        </View>
+                                        <Stack>
+                                            <Text style={styles.cardSubHead}>
+                                                Date
+                                            </Text>
+                                            <Text style={styles.cardHead}>
+                                                {showDates !== ''
+                                                    ? showDates
+                                                    : '-'}
+                                            </Text>
+                                        </Stack>
+                                    </HStack>
+
                                     <Stack>
-                                        <Text style={styles.cardSubHead}>
-                                            Date
-                                        </Text>
-                                        <Text style={styles.cardHead}>
-                                            {showDates !== '' ? showDates : '-'}
-                                        </Text>
+                                        <MaterialIcons
+                                            name='keyboard-arrow-down'
+                                            size={40}
+                                            color='#9c9fa1'
+                                        />
                                     </Stack>
                                 </HStack>
+                            </TouchableOpacity>
 
-                                <Stack>
-                                    <MaterialIcons
-                                        name='keyboard-arrow-down'
-                                        size={40}
-                                        color='#9c9fa1'
-                                    />
-                                </Stack>
-                            </HStack>
-                        </TouchableOpacity>
+                            {/** time */}
+                            <TouchableOpacity onPress={() => showMode('time')}>
+                                <HStack style={styles.cardContainer}>
+                                    <HStack spacing={20} alignItems='center'>
+                                        <View style={styles.cardIcon}>
+                                            <MaterialCommunityIcons
+                                                name='clock-time-nine-outline'
+                                                size={26}
+                                                color='#3e66fb'
+                                            />
+                                        </View>
+                                        <Stack>
+                                            <Text style={styles.cardSubHead}>
+                                                Time
+                                            </Text>
+                                            <Text style={styles.cardHead}>
+                                                {' '}
+                                                {showTime !== ''
+                                                    ? showTime
+                                                    : '-'}
+                                            </Text>
+                                        </Stack>
+                                    </HStack>
 
-                        {/** time */}
-                        <TouchableOpacity onPress={() => showMode('time')}>
-                            <HStack style={styles.cardContainer}>
-                                <HStack spacing={20} alignItems='center'>
-                                    <View style={styles.cardIcon}>
-                                        <MaterialCommunityIcons
-                                            name='clock-time-nine-outline'
-                                            size={26}
-                                            color='#3e66fb'
-                                        />
-                                    </View>
                                     <Stack>
-                                        <Text style={styles.cardSubHead}>
-                                            Time
-                                        </Text>
-                                        <Text style={styles.cardHead}>
-                                            {' '}
-                                            {showTime !== '' ? showTime : '-'}
-                                        </Text>
+                                        <MaterialIcons
+                                            name='keyboard-arrow-down'
+                                            size={40}
+                                            color='#9c9fa1'
+                                        />
                                     </Stack>
                                 </HStack>
+                            </TouchableOpacity>
 
-                                <Stack>
-                                    <MaterialIcons
-                                        name='keyboard-arrow-down'
-                                        size={40}
-                                        color='#9c9fa1'
-                                    />
-                                </Stack>
-                            </HStack>
-                        </TouchableOpacity>
-
-                        {/** modal for time and date */}
-                        <Modal
-                            style={{
-                                backgroundColor: 'rgba(0,0,0,0.1)',
-                                marginTop: 0,
-                            }}
-                            animationType='slide'
-                            transparent={true}
-                            visible={activateDate}>
-                            <View
+                            {/** modal for time and date */}
+                            <Modal
                                 style={{
-                                    backgroundColor: 'rgba(0,0,0,0.5)',
+                                    backgroundColor: 'rgba(0,0,0,0.1)',
+                                    marginTop: 0,
+                                }}
+                                animationType='slide'
+                                transparent={true}
+                                visible={activateDate}>
+                                <View
+                                    style={{
+                                        backgroundColor: 'rgba(0,0,0,0.5)',
 
-                                    justifyContent: 'center',
-                                    alignItems: 'center',
-                                    flex: 1,
-                                }}>
-                                <Stack spacing={30}>
-                                    <View style={styles.dateContainer}>
-                                        <DateTimePicker
-                                            textColor='#000'
-                                            testID='dateTimePicker'
-                                            value={date}
-                                            mode={mode}
-                                            display={
-                                                Platform.OS === 'ios'
-                                                    ? 'spinner'
-                                                    : 'default'
-                                            }
-                                            onChange={onChange}
-                                            positiveButtonLabel='OK'
-                                        />
-                                    </View>
+                                        justifyContent: 'center',
+                                        alignItems: 'center',
+                                        flex: 1,
+                                    }}>
+                                    <Stack spacing={30}>
+                                        <View style={styles.dateContainer}>
+                                            <DateTimePicker
+                                                textColor='#000'
+                                                testID='dateTimePicker'
+                                                value={date}
+                                                mode={mode}
+                                                display={
+                                                    Platform.OS === 'ios'
+                                                        ? 'spinner'
+                                                        : 'default'
+                                                }
+                                                onChange={onChange}
+                                                positiveButtonLabel='OK'
+                                            />
+                                        </View>
 
-                                    {Platform.OS === 'ios' && (
-                                        <TouchableOpacity
-                                            onPress={iosAcceptBtn}
-                                            style={styles.dateBtn}>
-                                            <Text style={styles.dateBtnText}>
-                                                Continue
-                                            </Text>
-                                        </TouchableOpacity>
-                                    )}
+                                        {Platform.OS === 'ios' && (
+                                            <TouchableOpacity
+                                                onPress={iosAcceptBtn}
+                                                style={styles.dateBtn}>
+                                                <Text
+                                                    style={styles.dateBtnText}>
+                                                    Continue
+                                                </Text>
+                                            </TouchableOpacity>
+                                        )}
 
-                                    {Platform.OS === 'ios' && (
-                                        <TouchableOpacity
-                                            onPress={iosCancelBtn}
-                                            style={styles.dateBtn}>
-                                            <Text style={styles.dateBtnText}>
-                                                Cancel
-                                            </Text>
-                                        </TouchableOpacity>
-                                    )}
-                                </Stack>
+                                        {Platform.OS === 'ios' && (
+                                            <TouchableOpacity
+                                                onPress={iosCancelBtn}
+                                                style={styles.dateBtn}>
+                                                <Text
+                                                    style={styles.dateBtnText}>
+                                                    Cancel
+                                                </Text>
+                                            </TouchableOpacity>
+                                        )}
+                                    </Stack>
+                                </View>
+                            </Modal>
+                        </Stack>
+
+                        {isSubmittingp ? (
+                            <View style={styles.nextBtn}>
+                                <ActivityIndicator size='small' color='white' />
                             </View>
-                        </Modal>
+                        ) : (
+                            <TouchableOpacity
+                                onPress={handleSubmit}
+                                style={styles.nextBtn}>
+                                <Text style={styles.nextBtnText}>Continue</Text>
+                            </TouchableOpacity>
+                        )}
                     </Stack>
-
-                    {isSubmittingp ? (
-                        <View style={styles.nextBtn}>
-                            <ActivityIndicator size='small' color='white' />
-                        </View>
-                    ) : (
-                        <TouchableOpacity
-                            onPress={handleSubmit}
-                            style={styles.nextBtn}>
-                            <Text style={styles.nextBtnText}>Continue</Text>
-                        </TouchableOpacity>
-                    )}
-                </Stack>
+                </ScrollView>
             </TouchableWithoutFeedback>
         </Stack>
     )

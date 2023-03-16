@@ -51,7 +51,7 @@ const ResetVerify = ({ navigation }) => {
     const handleInputOtp = (position, value) => {
         let otpArray = [...otpnum]
         otpArray[position] = value
-        console.log('value', value)
+
         setOtpNum(() => otpArray)
 
         if (position === 0 && otpArray[position] !== '' && value !== '') {
