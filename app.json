@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "CMVitals",
-    "slug": "CMVitals",
+    "slug": "client",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -36,6 +36,7 @@
       "eas": {
         "projectId": "7b94a2c9-275c-4107-b554-3aa0bbeb2687"
       }
-    }
+    },
+    "owner": "jkimbareeba"
   }
 }
