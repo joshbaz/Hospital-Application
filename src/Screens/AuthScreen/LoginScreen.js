@@ -22,6 +22,7 @@ import Toast from 'react-native-root-toast'
 import { Formik } from 'formik'
 import * as yup from 'yup'
 import PhoneInput from 'react-native-phone-number-input'
+import { COLORS } from '../../Colorvariables/colors'
 const LoginScreen = ({ navigation }) => {
     let dispatch = useDispatch()
     const [valueText, setValueText] = React.useState('passkey')
@@ -245,7 +246,7 @@ const LoginScreen = ({ navigation }) => {
                                                         )
                                                     }
                                                     style={styles.signUpText}>
-                                                    Sign Up
+                                                    Register
                                                 </Text>
                                             </Text>
                                         </Stack>
@@ -321,7 +322,7 @@ const styles = StyleSheet.create({
         height: 44,
         borderWidth: 1,
         borderRadius: 8,
-        backgroundColor: '#3E66FB',
+        backgroundColor: COLORS.primarycolor,
         borderColor: 'transparent',
         alignItems: 'center',
         justifyContent: 'center',
@@ -339,8 +340,10 @@ const styles = StyleSheet.create({
         fontFamily: 'Roboto_Regular',
         fontSize: 15,
         fontWeight: '400',
+        color: COLORS.textcolor,
     },
     signUpText: {
         fontFamily: 'Roboto_Bold',
+        color: COLORS.tertiarycolor,
     },
 })

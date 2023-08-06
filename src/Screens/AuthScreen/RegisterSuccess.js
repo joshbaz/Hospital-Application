@@ -56,9 +56,7 @@ const RegisterSuccess = ({ navigation }) => {
                             {/** button & signup */}
                             <Stack w='100%' items='center' spacing={20}>
                                 <Pressable
-                                    onPress={() =>
-                                        navigation.navigate('OnboardingScreen')
-                                    }
+                                    onPress={() => navigation.navigate('Login')}
                                     style={styles.buttonStyles}>
                                     <Text style={styles.buttonText}>
                                         Continue
