@@ -240,6 +240,13 @@ const UpdateAccount = async (userData) => {
             type: 'success',
             message: 'Info updated successful',
         }
+        //console.log('details', dataCollected)
+        let userInfo = JSON.stringify({
+            fullname: dataCollected.fullname,
+            phoneNumber: dataCollected.phoneNumber,
+        })
+
+        await AsyncStorage.setItem('@user', userInfo)
 
         return dataCollected
     } catch (error) {

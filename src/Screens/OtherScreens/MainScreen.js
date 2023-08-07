@@ -44,7 +44,7 @@ const MainScreen = ({ navigation }) => {
         dispatch(MainRecentVitalReading())
     }, [dispatch])
 
-    const { user, isLoggedIn } = useSelector((state) => state.auth)
+    const { user, isLoggedIn, userdetails } = useSelector((state) => state.auth)
 
     React.useEffect(() => {
         setBGlucoseVital(() => mainrecents.BGlucoseVital)
@@ -59,6 +59,7 @@ const MainScreen = ({ navigation }) => {
             }
         }
     }, [user, isLoggedIn])
+
     React.useEffect(() => {
         const getData = async () => {
             try {
@@ -77,7 +78,7 @@ const MainScreen = ({ navigation }) => {
         }
 
         getData()
-    }, [])
+    }, [userdetails])
 
     React.useEffect(() => {
         if (isError) {

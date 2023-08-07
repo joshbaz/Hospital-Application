@@ -273,11 +273,11 @@ const styles = StyleSheet.create({
     textHeader: {
         fontFamily: 'Roboto_Medium',
         fontSize: 32,
-        color: '#3E66FB',
+        color: '#1F337E',
     },
     subHeader: {
         fontFamily: 'Roboto_Regular',
-        fontWeight: '400',
+        fontWeight: '500',
         fontSize: 16,
         color: '#C2C9D1',
     },
@@ -288,7 +288,6 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderRadius: 10,
         padding: 0,
-        borderColor: 'rgba(22, 25, 28, 0.2)',
     },
     inputsPhone: {
         width: '80%',

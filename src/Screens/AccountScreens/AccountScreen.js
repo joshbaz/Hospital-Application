@@ -43,6 +43,7 @@ import * as Notifications from 'expo-notifications'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import Constants from 'expo-constants'
 import { NativeModules } from 'react-native'
+import { useEffect } from 'react'
 Notifications.setNotificationHandler({
     handleNotification: async () => ({
         shouldShowAlert: true,
@@ -168,6 +169,9 @@ const AccountScreen = ({ navigation }) => {
     const [ChangePassword, setChangePassword] = React.useState(false)
     const [textSecure, setTextSecure] = React.useState(true)
     const [textSecure2, setTextSecure2] = React.useState(true)
+    const [fullnames, setFullnames] = React.useState({
+        fullname: '',
+    })
 
     const { isError, isSuccess, message, userdetails } = useSelector(
         (state) => state.auth
@@ -223,7 +227,7 @@ const AccountScreen = ({ navigation }) => {
 
             if (message === 'logout success') {
                 // navigation.navigate('Login')
-              //  NativeModules.DevSettings.reload()
+                //  NativeModules.DevSettings.reload()
             } else {
             }
 
@@ -249,6 +253,23 @@ const AccountScreen = ({ navigation }) => {
         setTextSecure2(!textSecure2)
     }
 
+    React.useEffect(() => {
+        //fullname
+        const getData = async () => {
+            try {
+                const value = await AsyncStorage.getItem('@user')
+                if (value !== null) {
+                    // value previously stored
+                    setFullnames(() => JSON.parse(value))
+                }
+            } catch (e) {
+                // error reading value
+            }
+        }
+
+        getData()
+    }, [userdetails])
+
     return (
         <Stack style={styles.container}>
             <StatusBar />
@@ -256,7 +277,7 @@ const AccountScreen = ({ navigation }) => {
             <HStack
                 h={Platform.OS === 'ios' ? '10%' : '15%'}
                 style={styles.titleContainer}>
-                <Text style={styles.textTitle}>{userdetails.fullname}</Text>
+                <Text style={styles.textTitle}>{fullnames.fullname}</Text>
                 <TouchableOpacity
                     onPress={() => navigation.navigate('EditAccount')}
                     style={styles.titleBtn}>

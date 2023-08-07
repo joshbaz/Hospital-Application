@@ -329,6 +329,7 @@ export const authSlice = createSlice({
                 state.isLoading = false
                 state.isSuccess = true
                 state.message = action.payload
+                state.userdetails = {...state.userdetails, ...action.payload}
             })
             .addCase(UpdateAccount.rejected, (state, action) => {
                 state.isLoading = false
