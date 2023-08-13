@@ -144,6 +144,25 @@ const PatientRegistration = async (userData) => {
     }
 }
 
+
+//patient resend OTP
+const PatientResendOTP = async (userData) => {
+    try {
+        const response = await axios.post(
+            `${BASE_API_}/appPatient/v1/resendOTP`,
+            userData
+        )
+
+        let dataCollected = { ...response.data, type: 'success' }
+        await AsyncStorage.setItem('@verify_number', dataCollected.phoneNumber)
+
+        return dataCollected
+    } catch (error) {
+        let errorResult = errorFunction(error)
+        return errorResult
+    }
+}
+
 //registrationVerify
 const RegistrationVerify = async (userData) => {
     try {
@@ -283,6 +302,7 @@ const updatePasskey = async (userDetails) => {
 const authService = {
     Login,
     PatientRegistration,
+    PatientResendOTP,
     RegistrationVerify,
     RegisterOnboardInfo,
     GetAllDetails,

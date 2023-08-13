@@ -1,0 +1,50 @@
+
+.form-group.srchPanelRow.rnr-basic-search-field, div.srchPanelRow.form-group {  
+display: table;  
+margin: 5px;  
+}
+.navbar-default {
+    background-color: #1a5589;
+   
+}
+
+.navbar-nav > li > a {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    line-height: 16px;
+/*    background-color: #1a242f; */
+}
+body {
+    font-family: "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    /*font-size: 12px;*/
+    line-height: 1.4;
+    color: #000000;
+    background-color: #fff;
+}
+.navbar-default .navbar-nav > li > a {
+    color: #fffffd;
+}
+.panel-default .panel-heading, .panel-default .panel-title, .panel-default .panel-footer {
+    color: #ffffff;
+}
+
+.panel-default > .panel-heading {
+    color: #3E3F3A;
+    background-color: #1a5589;
+    border-color: #DFD7CA;
+}
+.breadcrumb {
+    padding: 8px 15px;
+    margin-bottom: 16px;
+    list-style: none;
+    background-color: #000;
+    border-radius: 3px;
+}
+.breadcrumb a {
+    color: #ffffff;
+}
+
+.r-grid > .panel > .panel-heading {
+    background-color: #1a5589;
+    color: inherit;
+  }

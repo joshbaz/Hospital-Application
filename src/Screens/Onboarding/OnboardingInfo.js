@@ -25,6 +25,7 @@ import { Formik } from 'formik'
 import * as yup from 'yup'
 import { Picker } from '@react-native-picker/picker'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import { COLORS } from '../../Colorvariables/colors'
 
 const OnboardingInfo = ({ navigation }) => {
     let dispatch = useDispatch()
@@ -684,12 +685,13 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         height: 44,
         padding: 8,
+        color: COLORS.textcolor,
     },
     inputPickerText: {
         width: '100%',
         alignItems: 'center',
         justifyContent: 'center',
-        color: 'rgba(22, 25, 28, 0.3)',
+        color: COLORS.textcolor,
         fontFamily: 'Roboto_Regular',
         fontSize: 15,
     },
@@ -735,7 +737,7 @@ const styles = StyleSheet.create({
 
     nextBtn: {
         height: 44,
-        backgroundColor: '#3E66FB',
+        backgroundColor: COLORS.primarycolor,
         borderRadius: 8,
         justifyContent: 'center',
         alignItems: 'center',
@@ -754,7 +756,7 @@ const styles = StyleSheet.create({
         lineHeight: 25,
     },
     termsTextLink: {
-        color: '#3E66FB',
+        color: COLORS.primarycolor,
         fontFamily: 'Roboto_Medium',
         fontSize: 13,
         textDecorationLine: 'underline',

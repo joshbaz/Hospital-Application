@@ -5,6 +5,7 @@ import authService from './authService'
 const initialState = {
     isError: false,
     isSuccess: false,
+    isResendSuccess: false,
     isLoading: false,
     message: '',
     isLoggedIn: false,
@@ -105,6 +106,19 @@ export const RegisterAppPatient = createAsyncThunk(
     }
 )
 
+export const ReSendOTPApp = createAsyncThunk(
+    'auth/resendOTP',
+    async (userDetails, thunkAPI) => {
+        const resendAttempt = await authService.PatientResendOTP(userDetails)
+
+        if (resendAttempt.type === 'success') {
+            return resendAttempt.message
+        } else {
+            return thunkAPI.rejectWithValue(resendAttempt.message)
+        }
+    }
+)
+
 //registrationVerify
 export const RegistrationVerify = createAsyncThunk(
     'auth/register/verify',
@@ -186,6 +200,7 @@ export const authSlice = createSlice({
         reset: (state) => {
             state.isLoading = false
             state.isSuccess = false
+            state.isResendSuccess = false
             state.isError = false
             state.message = ''
         },
@@ -275,6 +290,21 @@ export const authSlice = createSlice({
                 state.message = action.payload
             })
 
+            /** resend OTP to patient */
+            .addCase(ReSendOTPApp.pending, (state) => {
+                state.isLoading = true
+            })
+            .addCase(ReSendOTPApp.fulfilled, (state, action) => {
+                state.isLoading = false
+                state.isResendSuccess = true
+                state.message = action.payload
+            })
+            .addCase(ReSendOTPApp.rejected, (state, action) => {
+                state.isLoading = false
+                state.isError = true
+                state.message = action.payload
+            })
+
             /** verify registration */
             .addCase(RegistrationVerify.pending, (state) => {
                 state.isLoading = true
@@ -329,7 +359,7 @@ export const authSlice = createSlice({
                 state.isLoading = false
                 state.isSuccess = true
                 state.message = action.payload
-                state.userdetails = {...state.userdetails, ...action.payload}
+                state.userdetails = { ...state.userdetails, ...action.payload }
             })
             .addCase(UpdateAccount.rejected, (state, action) => {
                 state.isLoading = false

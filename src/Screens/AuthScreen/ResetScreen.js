@@ -19,6 +19,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 
 import { Formik } from 'formik'
 import * as yup from 'yup'
+import { COLORS } from '../../Colorvariables/colors'
 
 const ResetScreen = ({ navigation }) => {
     let dispatch = useDispatch()
@@ -129,7 +130,6 @@ const ResetScreen = ({ navigation }) => {
                         validationSchema={validationSchema}
                         onSubmit={(values, helpers) => {
                             setHelperFunctions(helpers)
-                            
 
                             let allValues = {
                                 password: values.password,
@@ -273,7 +273,7 @@ const styles = StyleSheet.create({
     textHeader: {
         fontFamily: 'Roboto_Medium',
         fontSize: 32,
-        color: '#3E66FB',
+        color: COLORS.primarycolor,
     },
     subHeader: {
         fontFamily: 'Roboto_Regular',
@@ -312,7 +312,7 @@ const styles = StyleSheet.create({
         height: 44,
         borderWidth: 1,
         borderRadius: 8,
-        backgroundColor: '#3E66FB',
+        backgroundColor: COLORS.primarycolor,
         borderColor: 'transparent',
         alignItems: 'center',
         justifyContent: 'center',

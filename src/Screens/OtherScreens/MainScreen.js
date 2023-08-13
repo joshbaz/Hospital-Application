@@ -29,6 +29,7 @@ import {
     reset,
     MainRecentVitalReading,
 } from '../../Store/features/vitals/vitalSlice'
+import { COLORS } from '../../Colorvariables/colors'
 
 const MainScreen = ({ navigation }) => {
     let dispatch = useDispatch()
@@ -181,7 +182,7 @@ const MainScreen = ({ navigation }) => {
                                     <MaterialCommunityIcons
                                         name='heart-pulse'
                                         size={24}
-                                        color='#3E66FB'
+                                        color={COLORS.primarycolor}
                                     />
                                 </Box>
 
@@ -213,7 +214,7 @@ const MainScreen = ({ navigation }) => {
                                     <MaterialIcons
                                         name='keyboard-arrow-right'
                                         size={20}
-                                        color='#3E66FB'
+                                        color={COLORS.primarycolor}
                                     />
                                 </HStack>
                             </TouchableOpacity>
@@ -328,7 +329,7 @@ const styles = StyleSheet.create({
     linkText: {
         fontFamily: 'Roboto_Regular',
         fontSize: 16,
-        color: '#3E66FB',
+        color: COLORS.primarycolor,
         lineHeight: 28,
     },
     statsContainer: {
@@ -358,7 +359,7 @@ const styles = StyleSheet.create({
     },
     statsDesc: { color: '#8E8E93', fontFamily: 'Roboto_Medium', fontSize: 17 },
     statsCardTitle: {
-        color: '#3E66FB',
+        color: COLORS.primarycolor,
         fontFamily: 'Roboto_Medium',
         fontSize: 17,
     },
@@ -377,7 +378,7 @@ const styles = StyleSheet.create({
         color: '#16191C',
     },
     measureBtn: {
-        backgroundColor: '#3E66FB',
+        backgroundColor: COLORS.primarycolor,
         height: 30,
         alignItems: 'center',
         justifyContent: 'center',

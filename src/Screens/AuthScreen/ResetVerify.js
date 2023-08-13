@@ -14,9 +14,14 @@ import {
 import React from 'react'
 import { Text, Stack, Box, HStack } from '@react-native-material/core'
 import { useDispatch, useSelector } from 'react-redux'
-import { ResetVerifys, reset } from '../../Store/features/auth/authSlice'
+import {
+    ResetVerifys,
+    ReSendOTPApp,
+    reset,
+} from '../../Store/features/auth/authSlice'
 import Toast from 'react-native-root-toast'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import { COLORS } from '../../Colorvariables/colors'
 
 const ResetVerify = ({ navigation }) => {
     let dispatch = useDispatch()
@@ -27,7 +32,11 @@ const ResetVerify = ({ navigation }) => {
     const [otpnum, setOtpNum] = React.useState(['', '', '', ''])
     const [phoneToVerify, setPhoneToVerify] = React.useState('')
     const [isSubmittingp, setIsSubmittingp] = React.useState(false)
-    const { isError, isSuccess, message } = useSelector((state) => state.auth)
+
+    const [isSubmittingResend, setIsSubmittingResend] = React.useState(false)
+    const { isError, isSuccess, isResendSuccess, message } = useSelector(
+        (state) => state.auth
+    )
     React.useEffect(() => {
         const getData = async () => {
             try {
@@ -108,6 +117,20 @@ const ResetVerify = ({ navigation }) => {
         }
     }
 
+    /** handle resend otp code */
+    const handleReSendOTP = () => {
+        if (phoneToVerify !== '') {
+            setOtpNum(() => ['', '', '', ''])
+            otp0.current.focus()
+            dispatch(
+                ReSendOTPApp({
+                    phoneNumber: phoneToVerify,
+                })
+            )
+            setIsSubmittingResend(() => true)
+        }
+    }
+
     React.useEffect(() => {
         if (isError) {
             let toast = Toast.show(message, {
@@ -126,6 +149,7 @@ const ResetVerify = ({ navigation }) => {
                 navigation.navigate('Login')
             }
             setIsSubmittingp(false)
+            setIsSubmittingResend(false)
             dispatch(reset())
         }
 
@@ -146,7 +170,23 @@ const ResetVerify = ({ navigation }) => {
 
             dispatch(reset())
         }
-    }, [isError, isSuccess, message, dispatch])
+
+        if (isResendSuccess && message) {
+            let toast = Toast.show(message, {
+                duration: Toast.durations.LONG,
+                position: 80,
+                backgroundColor: 'green',
+            })
+
+            setTimeout(function hideToast() {
+                Toast.hide(toast)
+            }, 8000)
+
+            setIsSubmittingResend(false)
+
+            dispatch(reset())
+        }
+    }, [isError, isSuccess, message, isResendSuccess, dispatch])
 
     return (
         <SafeAreaView style={{ flex: 1 }}>
@@ -219,11 +259,21 @@ const ResetVerify = ({ navigation }) => {
                                     <Text style={styles.noCodeText}>
                                         Didn't not received the code?
                                     </Text>
-                                    <TouchableOpacity>
-                                        <Text style={styles.resendText}>
-                                            Resend Code
-                                        </Text>
-                                    </TouchableOpacity>
+                                    {isSubmittingResend ? (
+                                        <View>
+                                            <ActivityIndicator
+                                                size='small'
+                                                color='black'
+                                            />
+                                        </View>
+                                    ) : (
+                                        <TouchableOpacity
+                                            onPress={handleReSendOTP}>
+                                            <Text style={styles.resendText}>
+                                                Resend Code
+                                            </Text>
+                                        </TouchableOpacity>
+                                    )}
                                 </Stack>
                             </Stack>
 
@@ -266,7 +316,7 @@ const styles = StyleSheet.create({
     textHeader: {
         fontFamily: 'Roboto_Medium',
         fontSize: 32,
-        color: '#3E66FB',
+        color: COLORS.primarycolor,
     },
     subHeader: {
         fontFamily: 'Roboto_Bold',
@@ -280,7 +330,7 @@ const styles = StyleSheet.create({
         fontFamily: 'Roboto_Bold',
         fontWeight: '700',
         fontSize: 16,
-        color: '#3E66FB',
+        color: COLORS.primarycolor,
         textDecorationLine: 'underline',
         lineHeight: 21,
         textAlign: 'center',
@@ -312,7 +362,7 @@ const styles = StyleSheet.create({
         height: 44,
         borderWidth: 1,
         borderRadius: 8,
-        backgroundColor: '#3E66FB',
+        backgroundColor: COLORS.primarycolor,
         borderColor: 'transparent',
         alignItems: 'center',
         justifyContent: 'center',
@@ -338,6 +388,6 @@ const styles = StyleSheet.create({
         textDecorationLine: 'underline',
         fontSize: 16,
         lineHeight: 19,
-        color: '#3E66FB',
+        color: COLORS.primarycolor,
     },
 })

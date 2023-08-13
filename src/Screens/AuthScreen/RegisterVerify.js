@@ -15,9 +15,10 @@ import React from 'react'
 import { Text, Stack, Box, HStack } from '@react-native-material/core'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useDispatch, useSelector } from 'react-redux'
-import { RegistrationVerify, reset } from '../../Store/features/auth/authSlice'
+import { RegistrationVerify,ReSendOTPApp, reset } from '../../Store/features/auth/authSlice'
 import Toast from 'react-native-root-toast'
 //import { SmoothPinCodeInput } from 'react-native-smooth-pincode-input'
+import { COLORS } from '../../Colorvariables/colors'
 
 const RegisterVerify = ({ navigation }) => {
     let dispatch = useDispatch()
@@ -28,7 +29,11 @@ const RegisterVerify = ({ navigation }) => {
     const [otpnum, setOtpNum] = React.useState(['', '', '', ''])
     const [phoneToVerify, setPhoneToVerify] = React.useState('')
     const [isSubmittingp, setIsSubmittingp] = React.useState(false)
-    const { isError, isSuccess, message } = useSelector((state) => state.auth)
+
+    const [isSubmittingResend, setIsSubmittingResend] = React.useState(false)
+    const { isError, isSuccess, message, isResendSuccess } = useSelector(
+        (state) => state.auth
+    )
     React.useEffect(() => {
         const getData = async () => {
             try {
@@ -52,7 +57,7 @@ const RegisterVerify = ({ navigation }) => {
     const handleInputOtp = (position, value) => {
         let otpArray = [...otpnum]
         otpArray[position] = value
-       
+
         setOtpNum(() => otpArray)
 
         if (position === 0 && otpArray[position] !== '' && value !== '') {
@@ -109,6 +114,20 @@ const RegisterVerify = ({ navigation }) => {
         }
     }
 
+    /** handle resend otp code */
+    const handleReSendOTP = () => {
+        if (phoneToVerify !== '') {
+            setOtpNum(() => ['', '', '', ''])
+            otp0.current.focus()
+            dispatch(
+                ReSendOTPApp({
+                    phoneNumber: phoneToVerify,
+                })
+            )
+            setIsSubmittingResend(() => true)
+        }
+    }
+
     React.useEffect(() => {
         if (isError) {
             let toast = Toast.show(message, {
@@ -127,6 +146,8 @@ const RegisterVerify = ({ navigation }) => {
                 navigation.navigate('Login')
             }
             setIsSubmittingp(false)
+            setIsSubmittingResend(false)
+
             dispatch(reset())
         }
 
@@ -147,7 +168,23 @@ const RegisterVerify = ({ navigation }) => {
 
             dispatch(reset())
         }
-    }, [isError, isSuccess, message, dispatch])
+
+        if (isResendSuccess && message) {
+            let toast = Toast.show(message, {
+                duration: Toast.durations.LONG,
+                position: 80,
+                backgroundColor: 'green',
+            })
+
+            setTimeout(function hideToast() {
+                Toast.hide(toast)
+            }, 8000)
+
+            setIsSubmittingResend(false)
+
+            dispatch(reset())
+        }
+    }, [isError, isSuccess, message, isResendSuccess, dispatch])
 
     return (
         <SafeAreaView style={{ flex: 1 }}>
@@ -220,11 +257,21 @@ const RegisterVerify = ({ navigation }) => {
                                     <Text style={styles.noCodeText}>
                                         Didn't not received the code?
                                     </Text>
-                                    <TouchableOpacity>
-                                        <Text style={styles.resendText}>
-                                            Resend Code
-                                        </Text>
-                                    </TouchableOpacity>
+                                    {isSubmittingResend ? (
+                                        <View>
+                                            <ActivityIndicator
+                                                size='small'
+                                                color='black'
+                                            />
+                                        </View>
+                                    ) : (
+                                        <TouchableOpacity
+                                            onPress={handleReSendOTP}>
+                                            <Text style={styles.resendText}>
+                                                Resend Code
+                                            </Text>
+                                        </TouchableOpacity>
+                                    )}
                                 </Stack>
                             </Stack>
 
@@ -267,7 +314,9 @@ const styles = StyleSheet.create({
     textHeader: {
         fontFamily: 'Roboto_Medium',
         fontSize: 32,
-        color: '#3E66FB',
+        // color: '#1F337E',
+        // color: '#3E66FB',
+        color: COLORS.primarycolor,
     },
     subHeader: {
         fontFamily: 'Roboto_Bold',
@@ -281,7 +330,9 @@ const styles = StyleSheet.create({
         fontFamily: 'Roboto_Bold',
         fontWeight: '700',
         fontSize: 16,
-        color: '#3E66FB',
+        // color: '#1F337E',
+        // color: '#3E66FB',
+        color: COLORS.primarycolor,
         textDecorationLine: 'underline',
         lineHeight: 21,
         textAlign: 'center',
@@ -307,13 +358,15 @@ const styles = StyleSheet.create({
         margin: 0,
         borderColor: 'rgba(22, 25, 28, 0.2)',
         textAlign: 'center',
+        color: COLORS.textcolor,
     },
 
     buttonStyles: {
         height: 44,
         borderWidth: 1,
         borderRadius: 8,
-        backgroundColor: '#3E66FB',
+        // backgroundColor: '#3E66FB',
+        backgroundColor: COLORS.primarycolor,
         borderColor: 'transparent',
         alignItems: 'center',
         justifyContent: 'center',
@@ -339,6 +392,7 @@ const styles = StyleSheet.create({
         textDecorationLine: 'underline',
         fontSize: 16,
         lineHeight: 19,
-        color: '#3E66FB',
+        // color: '#3E66FB',
+        color: COLORS.primarycolor,
     },
 })

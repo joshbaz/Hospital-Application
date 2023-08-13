@@ -26,6 +26,7 @@ import { FontAwesome } from '@expo/vector-icons'
 import { Zocial } from '@expo/vector-icons'
 
 import { List, Switch, Divider } from 'react-native-paper'
+import { COLORS } from '../../Colorvariables/colors'
 
 const linkData = [
     {
@@ -53,7 +54,6 @@ const linkData = [
 const LogTime = ({ route, navigation }) => {
     const [pathScreen, setPathScreen] = React.useState('')
     const { vital } = route.params
-   
 
     React.useEffect(() => {
         if (vital === 'Blood Glucose') {
@@ -119,7 +119,7 @@ const LogTime = ({ route, navigation }) => {
                                         <MaterialIcons
                                             name='keyboard-arrow-right'
                                             size={40}
-                                            color='#3E66FB'
+                                            color={COLORS.primarycolor}
                                         />
                                     </Stack>
                                 </TouchableOpacity>
@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
         height: 40,
         width: 40,
         borderWidth: 1.8,
-        borderColor: '#3E66FB',
+        borderColor: COLORS.primarycolor,
         borderRadius: 20,
         alignItems: 'center',
         justifyContent: 'center',

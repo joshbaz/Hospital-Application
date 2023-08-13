@@ -39,6 +39,7 @@ import {
     reset,
 } from '../../Store/features/vitals/vitalSlice'
 import moment from 'moment-timezone'
+import { COLORS } from '../../Colorvariables/colors'
 
 const listActivity = [
     {
@@ -286,7 +287,7 @@ const NewEntryFitness = ({ route, navigation }) => {
                                         <MaterialCommunityIcons
                                             name='heart-circle'
                                             size={26}
-                                            color='#3e66fb'
+                                            color={COLORS.primarycolor}
                                         />
                                     </View>
                                     <Stack>
@@ -368,7 +369,7 @@ const NewEntryFitness = ({ route, navigation }) => {
                                         <MaterialCommunityIcons
                                             name='calendar-month'
                                             size={26}
-                                            color='#3e66fb'
+                                            color={COLORS.primarycolor}
                                         />
                                     </View>
                                     <Stack>
@@ -399,7 +400,7 @@ const NewEntryFitness = ({ route, navigation }) => {
                                         <MaterialCommunityIcons
                                             name='clock-time-nine-outline'
                                             size={26}
-                                            color='#3e66fb'
+                                            color={COLORS.primarycolor}
                                         />
                                     </View>
                                     <Stack>
@@ -659,7 +660,7 @@ const styles = StyleSheet.create({
         height: 40,
         width: 40,
         borderWidth: 1.8,
-        borderColor: '#3E66FB',
+        borderColor: COLORS.primarycolor,
         borderRadius: 20,
         alignItems: 'center',
         justifyContent: 'center',
@@ -713,7 +714,7 @@ const styles = StyleSheet.create({
     },
     cardBtn: {
         height: 30,
-        backgroundColor: '#3E66FB',
+        backgroundColor: COLORS.primarycolor,
         width: 54,
         justifyContent: 'center',
         alignItems: 'center',
@@ -743,7 +744,7 @@ const styles = StyleSheet.create({
 
     nextBtn: {
         height: 44,
-        backgroundColor: '#3E66FB',
+        backgroundColor: COLORS.primarycolor,
         borderRadius: 8,
         justifyContent: 'center',
         alignItems: 'center',

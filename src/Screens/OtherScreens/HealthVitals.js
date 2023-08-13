@@ -38,6 +38,7 @@ import {
     reset,
 } from '../../Store/features/vitals/vitalSlice'
 import moment from 'moment-timezone'
+import { COLORS } from '../../Colorvariables/colors'
 
 const windowWidth = Dimensions.get('window').width
 
@@ -367,7 +368,7 @@ const HealthVitals = ({ navigation }) => {
                                                 {glucoseVitals.weekEntries.map(
                                                     (data) => {
                                                         let day = moment(
-                                                          new Date(
+                                                            new Date(
                                                                 data.createdDate
                                                             )
                                                         ).format('ddd, h:mm a')
@@ -475,7 +476,7 @@ const styles = StyleSheet.create({
     },
     linkBtn: {
         height: 40,
-        backgroundColor: '#3E66FB',
+        backgroundColor: COLORS.primarycolor,
         alignItems: 'center',
         justifyContent: 'center',
         width: 92,
@@ -505,7 +506,7 @@ const styles = StyleSheet.create({
         lineHeight: 25,
     },
     avgStatNum: {
-        color: '#3E66FB',
+        color: COLORS.primarycolor,
         fontFamily: 'Roboto_Medium',
         fontSize: 45,
     },

@@ -28,6 +28,7 @@ import { Fontisto } from '@expo/vector-icons'
 import { FontAwesome5 } from '@expo/vector-icons'
 
 import { List, Switch, Divider } from 'react-native-paper'
+import { COLORS } from '../../Colorvariables/colors'
 
 const VitalSigns = ({ route, navigation }) => {
     const { vitalTimelineType } = route.params
@@ -93,7 +94,7 @@ const VitalSigns = ({ route, navigation }) => {
                             <MaterialCommunityIcons
                                 name='heart-pulse'
                                 size={24}
-                                color='#3E66FB'
+                                color={COLORS.primarycolor}
                             />
                         </Box>
 
@@ -178,7 +179,7 @@ const styles = StyleSheet.create({
         height: 40,
         width: 40,
         borderWidth: 1.8,
-        borderColor: '#3E66FB',
+        borderColor: COLORS.primarycolor,
         borderRadius: 20,
         alignItems: 'center',
         justifyContent: 'center',
@@ -230,7 +231,7 @@ const styles = StyleSheet.create({
         color: '#16191C',
     },
     measureBtn: {
-        backgroundColor: '#3E66FB',
+        backgroundColor: COLORS.primarycolor,
         height: 30,
         alignItems: 'center',
         justifyContent: 'center',

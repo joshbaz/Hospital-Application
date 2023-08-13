@@ -18,6 +18,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import Toast from 'react-native-root-toast'
 import { Formik } from 'formik'
 import * as yup from 'yup'
+import { COLORS } from '../../Colorvariables/colors'
 
 const ForgotScreen = ({ navigation }) => {
     let dispatch = useDispatch()
@@ -150,6 +151,18 @@ const ForgotScreen = ({ navigation }) => {
                                             </Pressable>
                                         )}
                                     </Stack>
+
+                                    {/** Login */}
+                                    <Text style={styles.accText}>
+                                        Already have an account? -{' '}
+                                        <Text
+                                            onPress={() =>
+                                                navigation.navigate('Login')
+                                            }
+                                            style={styles.signUpText}>
+                                            Sign In
+                                        </Text>
+                                    </Text>
                                 </Stack>
                             )}
                         </Formik>
@@ -172,7 +185,7 @@ const styles = StyleSheet.create({
     textHeader: {
         fontFamily: 'Roboto_Medium',
         fontSize: 32,
-        color: '#3E66FB',
+        color: COLORS.primarycolor,
     },
     subHeader: {
         fontFamily: 'Roboto_Regular',
@@ -222,7 +235,7 @@ const styles = StyleSheet.create({
         height: 44,
         borderWidth: 1,
         borderRadius: 8,
-        backgroundColor: '#3E66FB',
+        backgroundColor: COLORS.primarycolor,
         borderColor: 'transparent',
         alignItems: 'center',
         justifyContent: 'center',

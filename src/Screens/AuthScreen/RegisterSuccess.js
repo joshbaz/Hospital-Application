@@ -13,6 +13,7 @@ import {
 } from 'react-native'
 import React from 'react'
 import { Text, Stack, Box, HStack } from '@react-native-material/core'
+import { COLORS } from '../../Colorvariables/colors'
 
 const RegisterSuccess = ({ navigation }) => {
     return (
@@ -86,7 +87,8 @@ const styles = StyleSheet.create({
     textHeader: {
         fontFamily: 'Roboto_Medium',
         fontSize: 32,
-        color: '#3E66FB',
+        color: COLORS.primarycolor,
+       // color: '#3E66FB',
     },
     subHeader: {
         fontFamily: 'Roboto_Bold',
@@ -100,7 +102,8 @@ const styles = StyleSheet.create({
         fontFamily: 'Roboto_Bold',
         fontWeight: '700',
         fontSize: 16,
-        color: '#3E66FB',
+        // color: '#3E66FB',
+        color: COLORS.primarycolor,
         textDecorationLine: 'underline',
         lineHeight: 21,
         textAlign: 'center',
@@ -132,7 +135,7 @@ const styles = StyleSheet.create({
         height: 44,
         borderWidth: 1,
         borderRadius: 8,
-        backgroundColor: '#3E66FB',
+        backgroundColor: COLORS.primarycolor,
         borderColor: 'transparent',
         alignItems: 'center',
         justifyContent: 'center',
@@ -152,12 +155,5 @@ const styles = StyleSheet.create({
         fontWeight: '400',
         color: 'rgba(28, 25, 57, 0.8)',
         lineHeight: 18,
-    },
-    resendText: {
-        fontFamily: 'Roboto_Bold',
-        textDecorationLine: 'underline',
-        fontSize: 16,
-        lineHeight: 19,
-        color: '#3E66FB',
     },
 })

@@ -19,6 +19,7 @@ import Toast from 'react-native-root-toast'
 import { Ionicons } from '@expo/vector-icons'
 import { Formik } from 'formik'
 import * as yup from 'yup'
+import { COLORS } from '../../Colorvariables/colors'
 
 const RegisterScreen = ({ navigation }) => {
     let dispatch = useDispatch()
@@ -111,7 +112,7 @@ const RegisterScreen = ({ navigation }) => {
                             validationSchema={validationSchema}
                             onSubmit={(values, helpers) => {
                                 setHelperFunctions(helpers)
-                                
+
                                 dispatch(RegisterAppPatient(values))
                                 setIsSubmittingp(() => true)
                             }}>
@@ -202,9 +203,7 @@ const RegisterScreen = ({ navigation }) => {
                                             Already have an account? -{' '}
                                             <Text
                                                 onPress={() =>
-                                                    navigation.navigate(
-                                                        'Login'
-                                                    )
+                                                    navigation.navigate('Login')
                                                 }
                                                 style={styles.signUpText}>
                                                 Sign In
@@ -233,7 +232,8 @@ const styles = StyleSheet.create({
     textHeader: {
         fontFamily: 'Roboto_Medium',
         fontSize: 32,
-        color: '#3E66FB',
+        // color: '#3E66FB',
+        color: '#1F337E',
     },
     subHeader: {
         fontFamily: 'Roboto_Regular',
@@ -250,6 +250,7 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         padding: 0,
         borderColor: 'rgba(22, 25, 28, 0.2)',
+        color: COLORS.textcolor,
     },
     inputsPhone: {
         width: '80%',
@@ -259,6 +260,7 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         padding: 0,
         borderColor: 'rgba(22, 25, 28, 0.2)',
+        color: COLORS.textcolor,
     },
 
     passwordContainer: {
@@ -271,6 +273,7 @@ const styles = StyleSheet.create({
     },
     passwordInput: {
         width: '89%',
+        color: COLORS.textcolor,
     },
     passwordIcon: {
         justifyContent: 'center',
@@ -283,7 +286,7 @@ const styles = StyleSheet.create({
         height: 44,
         borderWidth: 1,
         borderRadius: 8,
-        backgroundColor: '#3E66FB',
+        backgroundColor: COLORS.primarycolor,
         borderColor: 'transparent',
         alignItems: 'center',
         justifyContent: 'center',
@@ -301,6 +304,7 @@ const styles = StyleSheet.create({
         fontFamily: 'Roboto_Regular',
         fontSize: 15,
         fontWeight: '400',
+        color: COLORS.textcolor,
     },
     signUpText: {
         fontFamily: 'Roboto_Bold',
